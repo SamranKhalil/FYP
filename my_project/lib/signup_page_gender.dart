@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SignupPageGender extends StatefulWidget {
   final Color themeColor;
 
-  const SignupPageGender({Key? key, required this.themeColor})
-      : super(key: key);
+  const SignupPageGender({super.key, required this.themeColor});
 
   @override
   _SignupPageGenderState createState() => _SignupPageGenderState();
@@ -26,7 +26,7 @@ class _SignupPageGenderState extends State<SignupPageGender> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sign Up'),
+        title: Text('Sign Up', style: GoogleFonts.roboto()),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -34,16 +34,14 @@ class _SignupPageGenderState extends State<SignupPageGender> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(height: 50),
-            const Text(
+            Text(
               'Gender',
-              style: TextStyle(fontSize: 20),
+              style: GoogleFonts.robotoSlab(fontSize: 20),
             ),
             RadioListTile<String>(
-              title: const Text(
+              title: Text(
                 'Male',
-                style: TextStyle(
-                  fontSize: 18,
-                ),
+                style: GoogleFonts.robotoSlab(fontSize: 18),
               ),
               value: 'Male',
               groupValue: _selectedGender,
@@ -52,17 +50,14 @@ class _SignupPageGenderState extends State<SignupPageGender> {
                   _selectedGender = value;
                 });
               },
-              activeColor: widget.themeColor, // Set the color when selected
-              dense: true, // Reduce the size of the tile
+              activeColor: widget.themeColor,
+              dense: true,
             ),
             RadioListTile<String>(
-              title: const Text(
+              title: Text(
                 'Female',
-                style: TextStyle(
-                  fontSize: 18,
-                ),
+                style: GoogleFonts.robotoSlab(fontSize: 18),
               ),
-
               value: 'Female',
               groupValue: _selectedGender,
               onChanged: (value) {
@@ -70,39 +65,68 @@ class _SignupPageGenderState extends State<SignupPageGender> {
                   _selectedGender = value;
                 });
               },
-              activeColor: widget.themeColor, // Set the color when selected
-              dense: true, // Reduce the size of the tile
+              activeColor: widget.themeColor,
+              dense: true,
             ),
             const SizedBox(height: 20),
             TextFormField(
               controller: _heightController,
-              decoration: const InputDecoration(
-                labelText: 'Height(Cm)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: 'Height (Cm)',
+                labelStyle: GoogleFonts.roboto(color: widget.themeColor),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                  borderSide: BorderSide(color: widget.themeColor),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                  borderSide: const BorderSide(color: Colors.grey),
+                ),
               ),
+              style: GoogleFonts.roboto(),
             ),
             const SizedBox(height: 30),
             TextFormField(
               controller: _weightController,
-              decoration: const InputDecoration(
-                labelText: 'Weight(Kg)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: 'Weight (Kg)',
+                labelStyle: GoogleFonts.roboto(color: widget.themeColor),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                  borderSide: BorderSide(color: widget.themeColor),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                  borderSide: const BorderSide(color: Colors.grey),
+                ),
               ),
+              style: GoogleFonts.roboto(),
             ),
             const SizedBox(height: 40),
             ElevatedButton(
               onPressed: () {},
               style: ButtonStyle(
-                padding: WidgetStateProperty.all<EdgeInsets>(
-                  const EdgeInsets.fromLTRB(50.0, 10.0, 50.0, 10.0),
+                padding: MaterialStateProperty.all<EdgeInsets>(
+                  const EdgeInsets.fromLTRB(70.0, 10.0, 70.0, 10.0),
                 ),
-                backgroundColor: WidgetStateProperty.all<Color>(
+                backgroundColor: MaterialStateProperty.all<Color>(
                   widget.themeColor,
                 ),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                ),
               ),
-              child: const Text(
+              child: Text(
                 'Submit',
-                style: TextStyle(
+                style: GoogleFonts.robotoSlab(
                   color: Colors.white,
                   fontSize: 20,
                   fontWeight: FontWeight.bold,

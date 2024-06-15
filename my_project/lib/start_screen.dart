@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:my_project/login_page.dart';
 import 'package:my_project/signup_page.dart';
 
 class StartScreen extends StatelessWidget {
   final Color themeColor;
-  const StartScreen(
-      {this.themeColor = const Color.fromARGB(160, 131, 0, 239), super.key});
+  const StartScreen({
+    this.themeColor = const Color.fromARGB(160, 131, 0, 239),
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
+          const SizedBox(
+            height: 100,
+          ),
           Center(
             child: ClipOval(
               child: Image.asset(
@@ -25,10 +31,10 @@ class StartScreen extends StatelessWidget {
           const SizedBox(
             height: 50,
           ),
-          const Text(
+          Text(
             'VizAvatar',
-            style: TextStyle(
-              color: Color.fromARGB(160, 131, 0, 239),
+            style: GoogleFonts.robotoSlab(
+              color: themeColor,
               fontSize: 40,
               fontWeight: FontWeight.bold,
             ),
@@ -41,20 +47,21 @@ class StartScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => LoginPage(themeColor: themeColor)),
+                  builder: (context) => LoginPage(themeColor: themeColor),
+                ),
               );
             },
             style: ButtonStyle(
               padding: MaterialStateProperty.all<EdgeInsets>(
-                const EdgeInsets.fromLTRB(50.0, 10.0, 50.0, 10.0),
+                const EdgeInsets.fromLTRB(70.0, 10.0, 70.0, 10.0),
               ),
               backgroundColor: MaterialStateProperty.all<Color>(
                 themeColor,
               ),
             ),
-            child: const Text(
+            child: Text(
               "Login",
-              style: TextStyle(
+              style: GoogleFonts.robotoSlab(
                 color: Colors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -69,20 +76,21 @@ class StartScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => SignupPage(themeColor: themeColor)),
+                  builder: (context) => SignupPage(themeColor: themeColor),
+                ),
               );
             },
             style: ButtonStyle(
               padding: MaterialStateProperty.all<EdgeInsets>(
-                const EdgeInsets.fromLTRB(50.0, 10.0, 50.0, 10.0),
+                const EdgeInsets.fromLTRB(65.0, 10.0, 65.0, 10.0),
               ),
               backgroundColor: MaterialStateProperty.all<Color>(
                 themeColor,
               ),
             ),
-            child: const Text(
+            child: Text(
               "SignUp",
-              style: TextStyle(
+              style: GoogleFonts.robotoSlab(
                 color: Colors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,

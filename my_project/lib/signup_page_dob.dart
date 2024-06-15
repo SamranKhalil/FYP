@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:my_project/signup_page_gender.dart';
 
 class SignupPageDob extends StatefulWidget {
@@ -31,7 +32,7 @@ class _SignupPageDobState extends State<SignupPageDob> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sign Up'),
+        title: Text('Sign Up', style: GoogleFonts.roboto()),
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -39,30 +40,45 @@ class _SignupPageDobState extends State<SignupPageDob> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(height: 50),
-              const Text(
+              Text(
                 'Enter your date of birth',
-                style: TextStyle(fontSize: 16),
+                style: GoogleFonts.robotoSlab(fontSize: 16),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () => _selectDate(context),
-                child: Text(_selectedDate == null
-                    ? 'Select Date of Birth'
-                    : 'Date of Birth: ${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'),
+                child: Text(
+                  _selectedDate == null
+                      ? 'Select Date of Birth'
+                      : 'Date of Birth: ${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}',
+                  style: GoogleFonts.robotoSlab(),
+                ),
               ),
               const SizedBox(height: 40),
-              const Text(
+              Text(
                 'What should we call you?',
-                style: TextStyle(fontSize: 16),
+                style: GoogleFonts.robotoSlab(fontSize: 16),
               ),
               const SizedBox(height: 20),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: TextField(
                   decoration: InputDecoration(
                     labelText: 'Username',
-                    border: OutlineInputBorder(),
+                    labelStyle: GoogleFonts.roboto(color: widget.themeColor),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                      borderSide: BorderSide(color: widget.themeColor),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                      borderSide: const BorderSide(color: Colors.grey),
+                    ),
                   ),
+                  style: GoogleFonts.roboto(),
                 ),
               ),
               const SizedBox(height: 40),
@@ -71,22 +87,28 @@ class _SignupPageDobState extends State<SignupPageDob> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => SignupPageGender(
-                              themeColor: widget.themeColor,
-                            )),
+                      builder: (context) => SignupPageGender(
+                        themeColor: widget.themeColor,
+                      ),
+                    ),
                   );
                 },
                 style: ButtonStyle(
                   padding: MaterialStateProperty.all<EdgeInsets>(
-                    const EdgeInsets.fromLTRB(50.0, 10.0, 50.0, 10.0),
+                    const EdgeInsets.fromLTRB(70.0, 10.0, 70.0, 10.0),
                   ),
                   backgroundColor: MaterialStateProperty.all<Color>(
                     widget.themeColor,
                   ),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                  ),
                 ),
-                child: const Text(
+                child: Text(
                   'Next',
-                  style: TextStyle(
+                  style: GoogleFonts.robotoSlab(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
