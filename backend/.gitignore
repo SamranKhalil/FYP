@@ -1,0 +1,76 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Virtual environments
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.env
+.pipenv
+
+# Django stuff:
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+db.sqlite3
+
+# If you are using Docker:
+*.docker
+
+# Local configuration file
+local_settings.py
+
+# django-extensions
+*.coverage
+
+# Coverage reports
+htmlcov/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# SQL files
+*.sql
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# macOS
+.DS_Store
+
+# Visual Studio Code
+.vscode/
+
+# Postgres data directory
+pgdata/
+
+# Pipenv files
+Pipfile.lock
+
+# IDE specific files
+.idea/
+*.sublime-project
+*.sublime-workspace
+.vscode/
+
+# System files
+Thumbs.db
+Desktop.ini
+
+# Environment variables file
+.env

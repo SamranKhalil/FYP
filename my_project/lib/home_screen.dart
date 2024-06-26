@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 import 'package:flutter/services.dart';
+import 'package:my_project/diet_tracker.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatefulWidget {
   final Color themeColor;
-
-  const HomeScreen({super.key, required this.themeColor});
+  final String token;
+  const HomeScreen({super.key, required this.themeColor, required this.token});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
   Artboard? _artboard;
   late RiveAnimationController _controller;
 
@@ -41,18 +42,89 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  void _navigateToScreen(BuildContext context, Widget screen) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => screen),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home', style: TextStyle(color: Colors.white)),
-        backgroundColor: widget.themeColor,
+        title: Text(
+          'Home',
+          style: GoogleFonts.robotoSlab(
+            color: Colors.black,
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        // backgroundColor: widget.themeColor,
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: widget.themeColor,
+              ),
+              child: Text(
+                'Menu',
+                style: GoogleFonts.robotoSlab(
+                  color: Colors.white,
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.home),
+              title: const Text('Home'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                // No need to navigate since we're already on Home
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.food_bank_outlined),
+              title: const Text('Diet Tracker'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                _navigateToScreen(
+                    context,
+                    DietTracker(
+                        themeColor: widget.themeColor, token: widget.token));
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Profile'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                // Navigate to Profile screen
+                // _navigateToScreen(context, ProfileScreen(themeColor: widget.themeColor));
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Settings'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                // Navigate to Settings screen
+                // _navigateToScreen(context, SettingsScreen(themeColor: widget.themeColor));
+              },
+            ),
+          ],
+        ),
       ),
       body: Center(
         child: Column(
@@ -91,33 +163,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white, // Set the background color to white
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: widget.themeColor,
-        unselectedItemColor: Colors.black,
-        showUnselectedLabels: true,
-        onTap: _onItemTapped,
       ),
     );
   }

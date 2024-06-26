@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:my_project/signup_page_gender.dart';
+import 'package:my_project/signup_model.dart';
 
 class SignupPageDob extends StatefulWidget {
   final Color themeColor;
+  final SignupData signupData;
 
-  const SignupPageDob({super.key, required this.themeColor});
+  const SignupPageDob(
+      {Key? key, required this.themeColor, required this.signupData})
+      : super(key: key);
 
   @override
   _SignupPageDobState createState() => _SignupPageDobState();
@@ -13,6 +17,8 @@ class SignupPageDob extends StatefulWidget {
 
 class _SignupPageDobState extends State<SignupPageDob> {
   DateTime? _selectedDate;
+
+  bool get _isNextButtonEnabled => _selectedDate != null;
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -83,16 +89,27 @@ class _SignupPageDobState extends State<SignupPageDob> {
               ),
               const SizedBox(height: 40),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SignupPageGender(
-                        themeColor: widget.themeColor,
-                      ),
-                    ),
-                  );
-                },
+                onPressed: _isNextButtonEnabled
+                    ? () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SignupPageGender(
+                              themeColor: widget.themeColor,
+                              signupData: SignupData(
+                                email: widget.signupData.email,
+                                password: widget.signupData.password,
+                                username: '',
+                                dob: _selectedDate,
+                                gender: null,
+                                height: 0,
+                                weight: 0,
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                    : null,
                 style: ButtonStyle(
                   padding: MaterialStateProperty.all<EdgeInsets>(
                     const EdgeInsets.fromLTRB(70.0, 10.0, 70.0, 10.0),
