@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:my_project/signup_page_dob.dart';
 import 'package:my_project/signup_model.dart';
 
@@ -36,7 +35,8 @@ class _SignupPageState extends State<SignupPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sign Up', style: GoogleFonts.roboto()),
+        title:
+            const Text('Sign Up', style: TextStyle(fontFamily: 'RobotoSlab')),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -44,17 +44,20 @@ class _SignupPageState extends State<SignupPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 50),
-            Text(
+            const Text(
               'Let\'s Get Started',
-              style: GoogleFonts.robotoSlab(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(
+                  fontFamily: 'RobotoSlab',
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
-            Text(
+            const Text(
               'Provide us with a working email',
-              style: GoogleFonts.robotoSlab(fontSize: 18),
+              style: TextStyle(
+                  fontFamily: 'RobotoSlab',
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
             Padding(
@@ -63,7 +66,8 @@ class _SignupPageState extends State<SignupPage> {
                 controller: _emailController,
                 decoration: InputDecoration(
                   labelText: 'Email',
-                  labelStyle: GoogleFonts.roboto(color: widget.themeColor),
+                  labelStyle: TextStyle(
+                      fontFamily: 'RobotoSlab', color: widget.themeColor),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30.0),
                   ),
@@ -76,13 +80,16 @@ class _SignupPageState extends State<SignupPage> {
                     borderSide: const BorderSide(color: Colors.grey),
                   ),
                 ),
-                style: GoogleFonts.roboto(),
+                style: const TextStyle(fontFamily: 'RobotoSlab'),
               ),
             ),
             const SizedBox(height: 40),
-            Text(
+            const Text(
               'Set a Password',
-              style: GoogleFonts.robotoSlab(fontSize: 18),
+              style: TextStyle(
+                fontFamily: 'RobotoSlab',
+                fontSize: 18,
+              ),
             ),
             const SizedBox(height: 20),
             Padding(
@@ -92,7 +99,8 @@ class _SignupPageState extends State<SignupPage> {
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: 'Password',
-                  labelStyle: GoogleFonts.roboto(color: widget.themeColor),
+                  labelStyle: TextStyle(
+                      fontFamily: 'RobotoSlab', color: widget.themeColor),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30.0),
                   ),
@@ -105,7 +113,7 @@ class _SignupPageState extends State<SignupPage> {
                     borderSide: const BorderSide(color: Colors.grey),
                   ),
                 ),
-                style: GoogleFonts.roboto(),
+                style: const TextStyle(fontFamily: 'RobotoSlab'),
               ),
             ),
             const SizedBox(height: 40),
@@ -144,13 +152,13 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                 ),
               ),
-              child: Text(
+              child: const Text(
                 'Next',
-                style: GoogleFonts.robotoSlab(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(
+                    fontFamily: 'RobotoSlab',
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
               ),
             ),
           ],

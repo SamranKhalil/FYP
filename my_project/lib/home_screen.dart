@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 import 'package:flutter/services.dart';
 import 'package:my_project/diet_tracker.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatefulWidget {
   final Color themeColor;
@@ -53,13 +52,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Home',
-          style: GoogleFonts.robotoSlab(
-            color: Colors.black,
-            fontSize: 25,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(
+              fontFamily: 'RobotoSlab',
+              color: Colors.black,
+              fontSize: 25,
+              fontWeight: FontWeight.bold),
         ),
         // backgroundColor: widget.themeColor,
         leading: Builder(
@@ -77,13 +76,13 @@ class _HomeScreenState extends State<HomeScreen> {
               decoration: BoxDecoration(
                 color: widget.themeColor,
               ),
-              child: Text(
+              child: const Text(
                 'Menu',
-                style: GoogleFonts.robotoSlab(
-                  color: Colors.white,
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(
+                    fontFamily: 'RobotoSlab',
+                    color: Colors.white,
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold),
               ),
             ),
             ListTile(

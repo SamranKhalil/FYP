@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:my_project/login_page.dart';
 import 'package:my_project/signup_page.dart';
 
@@ -33,11 +32,11 @@ class StartScreen extends StatelessWidget {
           ),
           Text(
             'VizAvatar',
-            style: GoogleFonts.robotoSlab(
-              color: themeColor,
-              fontSize: 40,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(
+                fontFamily: 'RobotoSlab',
+                color: themeColor,
+                fontSize: 40,
+                fontWeight: FontWeight.bold),
           ),
           const SizedBox(
             height: 50,
@@ -59,13 +58,13 @@ class StartScreen extends StatelessWidget {
                 themeColor,
               ),
             ),
-            child: Text(
+            child: const Text(
               "Login",
-              style: GoogleFonts.robotoSlab(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(
+                  fontFamily: 'RobotoSlab',
+                  color: Colors.white,
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold),
             ),
           ),
           const SizedBox(
@@ -88,13 +87,13 @@ class StartScreen extends StatelessWidget {
                 themeColor,
               ),
             ),
-            child: Text(
+            child: const Text(
               "SignUp",
-              style: GoogleFonts.robotoSlab(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(
+                  fontFamily: 'RobotoSlab',
+                  color: Colors.white,
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold),
             ),
           ),
         ],

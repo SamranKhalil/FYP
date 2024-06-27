@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:my_project/home_screen.dart';
@@ -84,15 +83,16 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login', style: GoogleFonts.roboto()),
+        title: const Text('Login', style: TextStyle(fontFamily: 'RobotoSlab')),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'Welcome Back',
-              style: GoogleFonts.lobster(
+              style: TextStyle(
+                fontFamily: 'RobotoSlab',
                 fontSize: 30,
               ),
             ),
@@ -159,13 +159,13 @@ class _LoginPageState extends State<LoginPage> {
               ),
               child: _isLoading
                   ? const CircularProgressIndicator()
-                  : Text(
+                  : const Text(
                       'Login',
-                      style: GoogleFonts.robotoSlab(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: TextStyle(
+                          fontFamily: 'RobotoSlab',
+                          color: Colors.white,
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold),
                     ),
             ),
             const SizedBox(height: 50),

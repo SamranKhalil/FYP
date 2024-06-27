@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:my_project/home_screen.dart';
@@ -10,10 +9,10 @@ class SignupPageGender extends StatefulWidget {
   final SignupData signupData;
 
   const SignupPageGender({
-    Key? key,
+    super.key,
     required this.themeColor,
     required this.signupData,
-  }) : super(key: key);
+  });
 
   @override
   _SignupPageGenderState createState() => _SignupPageGenderState();
@@ -76,8 +75,7 @@ class _SignupPageGenderState extends State<SignupPageGender> {
     try {
       final int age = calculateAge(widget.signupData.dob);
       final response = await http.post(
-        Uri.parse(
-            'http://192.168.1.2:8000/user/signup/'), // Replace with your computer's IP address
+        Uri.parse('http://10.0.2.2:8000/user/signup/'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -132,7 +130,8 @@ class _SignupPageGenderState extends State<SignupPageGender> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sign Up', style: GoogleFonts.roboto()),
+        title:
+            const Text('Sign Up', style: TextStyle(fontFamily: 'RobotoSlab')),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -140,14 +139,14 @@ class _SignupPageGenderState extends State<SignupPageGender> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(height: 50),
-            Text(
+            const Text(
               'Gender',
-              style: GoogleFonts.robotoSlab(fontSize: 20),
+              style: TextStyle(fontFamily: 'RobotoSlab', fontSize: 20),
             ),
             RadioListTile<String>(
-              title: Text(
+              title: const Text(
                 'Male',
-                style: GoogleFonts.robotoSlab(fontSize: 18),
+                style: TextStyle(fontFamily: 'RobotoSlab', fontSize: 18),
               ),
               value: 'Male',
               groupValue: _selectedGender,
@@ -162,9 +161,9 @@ class _SignupPageGenderState extends State<SignupPageGender> {
               dense: true,
             ),
             RadioListTile<String>(
-              title: Text(
+              title: const Text(
                 'Female',
-                style: GoogleFonts.robotoSlab(fontSize: 18),
+                style: TextStyle(fontFamily: 'RobotoSlab', fontSize: 18),
               ),
               value: 'Female',
               groupValue: _selectedGender,
@@ -184,7 +183,8 @@ class _SignupPageGenderState extends State<SignupPageGender> {
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 labelText: 'Height (Cm)',
-                labelStyle: GoogleFonts.roboto(color: widget.themeColor),
+                labelStyle: TextStyle(
+                    fontFamily: 'RobotoSlab', color: widget.themeColor),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30.0),
                 ),
@@ -197,7 +197,7 @@ class _SignupPageGenderState extends State<SignupPageGender> {
                   borderSide: const BorderSide(color: Colors.grey),
                 ),
               ),
-              style: GoogleFonts.roboto(),
+              style: const TextStyle(fontFamily: 'RobotoSlab'),
             ),
             const SizedBox(height: 30),
             TextFormField(
@@ -205,7 +205,8 @@ class _SignupPageGenderState extends State<SignupPageGender> {
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 labelText: 'Weight (Kg)',
-                labelStyle: GoogleFonts.roboto(color: widget.themeColor),
+                labelStyle: TextStyle(
+                    fontFamily: 'RobotoSlab', color: widget.themeColor),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30.0),
                 ),
@@ -218,7 +219,7 @@ class _SignupPageGenderState extends State<SignupPageGender> {
                   borderSide: const BorderSide(color: Colors.grey),
                 ),
               ),
-              style: GoogleFonts.roboto(),
+              style: const TextStyle(fontFamily: 'RobotoSlab'),
             ),
             const SizedBox(height: 40),
             ElevatedButton(
@@ -238,13 +239,13 @@ class _SignupPageGenderState extends State<SignupPageGender> {
               ),
               child: _isLoading
                   ? const CircularProgressIndicator()
-                  : Text(
+                  : const Text(
                       'Submit',
-                      style: GoogleFonts.robotoSlab(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: TextStyle(
+                          fontFamily: 'RobotoSlab',
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
                     ),
             ),
           ],

@@ -1,7 +1,6 @@
 // diet_tracker.dart
 import 'package:flutter/material.dart';
 import 'package:my_project/home_screen.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'add_meal_form.dart'; // Import the new file
 
@@ -60,9 +59,10 @@ class _DietTrackerState extends State<DietTracker> {
       onTap: () => _onPeriodSelected(period),
       child: Text(
         period,
-        style: GoogleFonts.robotoSlab(
-          color: Colors.black,
-          fontSize: 16,
+        style: TextStyle(
+          fontFamily: 'RobotoSlab',
+          color: Colors.white,
+          fontSize: 20,
           fontWeight:
               _selectedPeriod == period ? FontWeight.bold : FontWeight.normal,
         ),
@@ -83,13 +83,13 @@ class _DietTrackerState extends State<DietTracker> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Add Meal',
-              style: GoogleFonts.robotoSlab(
-                color: Colors.black,
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(
+                  fontFamily: 'RobotoSlab',
+                  color: Colors.black,
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold),
             ),
             const SizedBox(width: 20),
             Container(
@@ -117,13 +117,13 @@ class _DietTrackerState extends State<DietTracker> {
               decoration: BoxDecoration(
                 color: widget.themeColor,
               ),
-              child: Text(
+              child: const Text(
                 'Menu',
-                style: GoogleFonts.robotoSlab(
-                  color: Colors.white,
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(
+                    fontFamily: 'RobotoSlab',
+                    color: Colors.white,
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold),
               ),
             ),
             ListTile(
@@ -188,13 +188,13 @@ class _DietTrackerState extends State<DietTracker> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                     'Your Daily Nutrition',
-                    style: GoogleFonts.robotoSlab(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(
+                        fontFamily: 'RobotoSlab',
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 20),
                   PieChart(
@@ -236,16 +236,16 @@ class _DietTrackerState extends State<DietTracker> {
                 borderRadius: BorderRadius.circular(10),
                 color: Colors.green[900],
               ),
-              child: Column(
+              child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Your Meals',
-                    style: GoogleFonts.robotoSlab(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(
+                        fontFamily: 'RobotoSlab',
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -262,7 +262,8 @@ class _DietTrackerState extends State<DietTracker> {
                 ),
                 child: Text(
                   meal,
-                  style: GoogleFonts.robotoSlab(
+                  style: const TextStyle(
+                    fontFamily: 'RobotoSlab',
                     color: Colors.white,
                     fontSize: 18,
                   ),

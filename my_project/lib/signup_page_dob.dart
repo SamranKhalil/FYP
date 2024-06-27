@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:my_project/signup_page_gender.dart';
 import 'package:my_project/signup_model.dart';
 
@@ -38,7 +37,8 @@ class _SignupPageDobState extends State<SignupPageDob> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sign Up', style: GoogleFonts.roboto()),
+        title:
+            const Text('Sign Up', style: TextStyle(fontFamily: 'RobotoSlab')),
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -46,9 +46,9 @@ class _SignupPageDobState extends State<SignupPageDob> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(height: 50),
-              Text(
+              const Text(
                 'Enter your date of birth',
-                style: GoogleFonts.robotoSlab(fontSize: 16),
+                style: TextStyle(fontFamily: 'RobotoSlab', fontSize: 16),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
@@ -57,13 +57,13 @@ class _SignupPageDobState extends State<SignupPageDob> {
                   _selectedDate == null
                       ? 'Select Date of Birth'
                       : 'Date of Birth: ${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}',
-                  style: GoogleFonts.robotoSlab(),
+                  style: const TextStyle(fontFamily: 'RobotoSlab'),
                 ),
               ),
               const SizedBox(height: 40),
-              Text(
+              const Text(
                 'What should we call you?',
-                style: GoogleFonts.robotoSlab(fontSize: 16),
+                style: TextStyle(fontFamily: 'RobotoSlab', fontSize: 16),
               ),
               const SizedBox(height: 20),
               Padding(
@@ -71,7 +71,8 @@ class _SignupPageDobState extends State<SignupPageDob> {
                 child: TextField(
                   decoration: InputDecoration(
                     labelText: 'Username',
-                    labelStyle: GoogleFonts.roboto(color: widget.themeColor),
+                    labelStyle: TextStyle(
+                        fontFamily: 'RobotoSlab', color: widget.themeColor),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30.0),
                     ),
@@ -84,7 +85,7 @@ class _SignupPageDobState extends State<SignupPageDob> {
                       borderSide: const BorderSide(color: Colors.grey),
                     ),
                   ),
-                  style: GoogleFonts.roboto(),
+                  style: const TextStyle(fontFamily: 'RobotoSlab'),
                 ),
               ),
               const SizedBox(height: 40),
@@ -123,13 +124,13 @@ class _SignupPageDobState extends State<SignupPageDob> {
                     ),
                   ),
                 ),
-                child: Text(
+                child: const Text(
                   'Next',
-                  style: GoogleFonts.robotoSlab(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(
+                      fontFamily: 'RobotoSlab',
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
             ],
