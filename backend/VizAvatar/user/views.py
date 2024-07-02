@@ -6,7 +6,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from .models import User, NutritionalIntake
 from .serializers import UserSerializer, NutritionalIntakeSerializer, DateRangeSerializer
 from django.utils import timezone
-from utils import calculate_nutritional_values
+from .utils import calculate_nutritional_values
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Sum
 from rest_framework.authtoken.models import Token
