@@ -4,8 +4,13 @@ import 'package:my_project/signup_model.dart';
 
 class SignupPage extends StatefulWidget {
   final Color themeColor;
+  final Color backgroundColor;
 
-  const SignupPage({Key? key, required this.themeColor}) : super(key: key);
+  const SignupPage({
+    super.key,
+    required this.themeColor,
+    required this.backgroundColor,
+  });
 
   @override
   _SignupPageState createState() => _SignupPageState();
@@ -34,9 +39,12 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: widget.backgroundColor,
       appBar: AppBar(
-        title:
-            const Text('Sign Up', style: TextStyle(fontFamily: 'RobotoSlab')),
+        title: const Text('Sign Up',
+            style: TextStyle(fontFamily: 'RobotoSlab', color: Colors.white)),
+        backgroundColor: widget.backgroundColor,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -49,7 +57,8 @@ class _SignupPageState extends State<SignupPage> {
               style: TextStyle(
                   fontFamily: 'RobotoSlab',
                   fontSize: 28,
-                  fontWeight: FontWeight.bold),
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             ),
             const SizedBox(height: 20),
             const Text(
@@ -57,13 +66,15 @@ class _SignupPageState extends State<SignupPage> {
               style: TextStyle(
                   fontFamily: 'RobotoSlab',
                   fontSize: 18,
-                  fontWeight: FontWeight.bold),
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             ),
             const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: TextField(
                 controller: _emailController,
+                style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'Email',
                   labelStyle: TextStyle(
@@ -80,7 +91,7 @@ class _SignupPageState extends State<SignupPage> {
                     borderSide: const BorderSide(color: Colors.grey),
                   ),
                 ),
-                style: const TextStyle(fontFamily: 'RobotoSlab'),
+                onChanged: (_) => _validateFields(),
               ),
             ),
             const SizedBox(height: 40),
@@ -89,6 +100,7 @@ class _SignupPageState extends State<SignupPage> {
               style: TextStyle(
                 fontFamily: 'RobotoSlab',
                 fontSize: 18,
+                color: Colors.white,
               ),
             ),
             const SizedBox(height: 20),
@@ -96,6 +108,7 @@ class _SignupPageState extends State<SignupPage> {
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: TextField(
                 controller: _passwordController,
+                style: const TextStyle(color: Colors.white),
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: 'Password',
@@ -113,7 +126,7 @@ class _SignupPageState extends State<SignupPage> {
                     borderSide: const BorderSide(color: Colors.grey),
                   ),
                 ),
-                style: const TextStyle(fontFamily: 'RobotoSlab'),
+                onChanged: (_) => _validateFields(),
               ),
             ),
             const SizedBox(height: 40),
@@ -125,6 +138,7 @@ class _SignupPageState extends State<SignupPage> {
                         MaterialPageRoute(
                           builder: (context) => SignupPageDob(
                             themeColor: widget.themeColor,
+                            backgroundColor: widget.backgroundColor,
                             signupData: SignupData(
                               email: _emailController.text,
                               password: _passwordController.text,

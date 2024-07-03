@@ -34,6 +34,8 @@ dependencies:
   rive: ^0.13.5
   http: ^0.13.4
   pie_chart: ^5.4.0
+  intl: ^0.17.0
+  sensors_plus: ^1.2.1
 
 dev_dependencies:
   flutter_test:
@@ -66,8 +68,6 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/start_screen_img.jpg
-    - assets/idle.riv
-    - assets/state.riv
     - assets/untitled.riv
     - assets/animations.riv
 

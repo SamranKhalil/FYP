@@ -4,14 +4,18 @@ import 'package:my_project/signup_page.dart';
 
 class StartScreen extends StatelessWidget {
   final Color themeColor;
+  final Color backgroundColor;
+
   const StartScreen({
-    this.themeColor = const Color.fromARGB(160, 131, 0, 239),
     super.key,
+    this.backgroundColor = const Color.fromARGB(255, 30, 39, 97),
+    this.themeColor = const Color.fromARGB(255, 187, 210, 248),
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: backgroundColor,
       body: Column(
         children: [
           const SizedBox(
@@ -46,7 +50,10 @@ class StartScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => LoginPage(themeColor: themeColor),
+                  builder: (context) => LoginPage(
+                    themeColor: themeColor,
+                    backgroundColor: backgroundColor,
+                  ),
                 ),
               );
             },
@@ -63,7 +70,7 @@ class StartScreen extends StatelessWidget {
               style: TextStyle(
                   fontFamily: 'RobotoSlab',
                   color: Colors.white,
-                  fontSize: 25,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold),
             ),
           ),
@@ -75,7 +82,10 @@ class StartScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => SignupPage(themeColor: themeColor),
+                  builder: (context) => SignupPage(
+                    themeColor: themeColor,
+                    backgroundColor: backgroundColor,
+                  ),
                 ),
               );
             },
@@ -92,7 +102,7 @@ class StartScreen extends StatelessWidget {
               style: TextStyle(
                   fontFamily: 'RobotoSlab',
                   color: Colors.white,
-                  fontSize: 25,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold),
             ),
           ),

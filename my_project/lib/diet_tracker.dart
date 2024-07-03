@@ -1,13 +1,18 @@
-// diet_tracker.dart
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:my_project/home_screen.dart';
 import 'package:pie_chart/pie_chart.dart';
-import 'add_meal_form.dart'; // Import the new file
+import 'add_meal_form.dart';
 
 class DietTracker extends StatefulWidget {
   final Color themeColor;
-  final String token;
-  const DietTracker({super.key, required this.themeColor, required this.token});
+  final Color backgroundColor;
+
+  const DietTracker({
+    super.key,
+    required this.themeColor,
+    required this.backgroundColor,
+  });
 
   @override
   _DietTrackerState createState() => _DietTrackerState();
@@ -23,7 +28,8 @@ class _DietTrackerState extends State<DietTracker> {
     'Protein': 80,
   };
 
-  String _selectedPeriod = 'Day';
+  DateTime? _startDate;
+  DateTime? _endDate;
 
   void _navigateToScreen(BuildContext context, Widget screen) {
     Navigator.push(
@@ -37,10 +43,12 @@ class _DietTrackerState extends State<DietTracker> {
       context: context,
       builder: (context) {
         return AddMealForm(
+          themeColor: widget.themeColor,
+          backgroundColor: widget.backgroundColor,
           meals: _meals,
-          onMealAdded: (meal, quantity) {
+          onMealAdded: (mealType, meal, quantity) {
             setState(() {
-              addedMeals.add('$meal - $quantity g');
+              addedMeals.add('$mealType - $meal - $quantity g');
             });
           },
         );
@@ -48,35 +56,36 @@ class _DietTrackerState extends State<DietTracker> {
     );
   }
 
-  void _onPeriodSelected(String period) {
-    setState(() {
-      _selectedPeriod = period;
-    });
-  }
+  void _selectDateRange(BuildContext context) async {
+    final DateTime today = DateTime.now().toUtc().add(const Duration(hours: 5));
+    final DateTime firstDate = DateTime(today.year - 5);
+    final DateTime lastDate = DateTime(today.year + 5);
 
-  Widget _buildPeriodText(String period) {
-    return GestureDetector(
-      onTap: () => _onPeriodSelected(period),
-      child: Text(
-        period,
-        style: TextStyle(
-          fontFamily: 'RobotoSlab',
-          color: Colors.white,
-          fontSize: 20,
-          fontWeight:
-              _selectedPeriod == period ? FontWeight.bold : FontWeight.normal,
-        ),
-      ),
-    );
+    final List<DateTime>? picked = await showDateRangePicker(
+      context: context,
+      firstDate: firstDate,
+      lastDate: lastDate,
+      initialDateRange: _startDate != null && _endDate != null
+          ? DateTimeRange(start: _startDate!, end: _endDate!)
+          : null,
+    ).then((range) => range != null ? [range.start, range.end] : null);
+
+    if (picked != null && picked.length == 2) {
+      setState(() {
+        _startDate = picked[0];
+        _endDate = picked[1];
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: widget.backgroundColor,
       appBar: AppBar(
         leading: Builder(
           builder: (context) => IconButton(
-            icon: const Icon(Icons.menu),
+            icon: const Icon(Icons.menu, color: Colors.white),
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
@@ -86,10 +95,11 @@ class _DietTrackerState extends State<DietTracker> {
             const Text(
               'Add Meal',
               style: TextStyle(
-                  fontFamily: 'RobotoSlab',
-                  color: Colors.black,
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold),
+                fontFamily: 'RobotoSlab',
+                color: Colors.white,
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(width: 20),
             Container(
@@ -108,6 +118,7 @@ class _DietTrackerState extends State<DietTracker> {
             ),
           ],
         ),
+        backgroundColor: widget.backgroundColor,
       ),
       drawer: Drawer(
         child: ListView(
@@ -120,10 +131,11 @@ class _DietTrackerState extends State<DietTracker> {
               child: const Text(
                 'Menu',
                 style: TextStyle(
-                    fontFamily: 'RobotoSlab',
-                    color: Colors.white,
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold),
+                  fontFamily: 'RobotoSlab',
+                  color: Colors.white,
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             ListTile(
@@ -132,9 +144,12 @@ class _DietTrackerState extends State<DietTracker> {
               onTap: () {
                 Navigator.pop(context);
                 _navigateToScreen(
-                    context,
-                    HomeScreen(
-                        themeColor: widget.themeColor, token: widget.token));
+                  context,
+                  HomeScreen(
+                    themeColor: widget.themeColor,
+                    backgroundColor: widget.backgroundColor,
+                  ),
+                );
               },
             ),
             ListTile(
@@ -170,11 +185,26 @@ class _DietTrackerState extends State<DietTracker> {
           children: [
             const SizedBox(height: 20),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildPeriodText('Day'),
-                _buildPeriodText('Week'),
-                _buildPeriodText('Month'),
+                InkWell(
+                  onTap: () => _selectDateRange(context),
+                  child: Text(
+                    _startDate != null && _endDate != null
+                        ? '${DateFormat('d-MMMM-yyyy').format(_startDate!)} to ${DateFormat('d-MMMM-yyyy').format(_endDate!)}'
+                        : 'Select Date Range',
+                    style: const TextStyle(
+                      fontFamily: 'RobotoSlab',
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const Icon(
+                  Icons.keyboard_arrow_down,
+                  color: Colors.white,
+                ),
               ],
             ),
             const SizedBox(height: 30),
@@ -183,7 +213,7 @@ class _DietTrackerState extends State<DietTracker> {
               margin: const EdgeInsets.all(10.0),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                color: Colors.green[900],
+                color: widget.themeColor,
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -191,10 +221,11 @@ class _DietTrackerState extends State<DietTracker> {
                   const Text(
                     'Your Daily Nutrition',
                     style: TextStyle(
-                        fontFamily: 'RobotoSlab',
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
+                      fontFamily: 'RobotoSlab',
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 20),
                   PieChart(
@@ -213,9 +244,10 @@ class _DietTrackerState extends State<DietTracker> {
                       legendPosition: LegendPosition.right,
                       showLegendsInRow: false,
                       legendTextStyle: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          color: Colors.white),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Colors.white,
+                      ),
                     ),
                     chartValuesOptions: const ChartValuesOptions(
                       showChartValuesOutside: true,
@@ -234,7 +266,7 @@ class _DietTrackerState extends State<DietTracker> {
               margin: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                color: Colors.green[900],
+                color: widget.themeColor,
               ),
               child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -242,23 +274,23 @@ class _DietTrackerState extends State<DietTracker> {
                   Text(
                     'Your Meals',
                     style: TextStyle(
-                        fontFamily: 'RobotoSlab',
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
+                      fontFamily: 'RobotoSlab',
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 1),
-            // Display each added meal in a new rectangle
             ...addedMeals.map((meal) {
               return Container(
                 padding: const EdgeInsets.all(20),
                 margin: const EdgeInsets.symmetric(vertical: 1, horizontal: 10),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: Colors.green[900],
+                  color: widget.themeColor,
                 ),
                 child: Text(
                   meal,

@@ -4,11 +4,15 @@ import 'package:my_project/signup_model.dart';
 
 class SignupPageDob extends StatefulWidget {
   final Color themeColor;
+  final Color backgroundColor;
   final SignupData signupData;
 
-  const SignupPageDob(
-      {Key? key, required this.themeColor, required this.signupData})
-      : super(key: key);
+  const SignupPageDob({
+    super.key,
+    required this.themeColor,
+    required this.backgroundColor,
+    required this.signupData,
+  });
 
   @override
   _SignupPageDobState createState() => _SignupPageDobState();
@@ -16,8 +20,10 @@ class SignupPageDob extends StatefulWidget {
 
 class _SignupPageDobState extends State<SignupPageDob> {
   DateTime? _selectedDate;
+  TextEditingController _usernameController = TextEditingController();
 
-  bool get _isNextButtonEnabled => _selectedDate != null;
+  bool get _isNextButtonEnabled =>
+      _selectedDate != null && _usernameController.text.isNotEmpty;
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -34,11 +40,20 @@ class _SignupPageDobState extends State<SignupPageDob> {
   }
 
   @override
+  void dispose() {
+    _usernameController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: widget.backgroundColor,
       appBar: AppBar(
-        title:
-            const Text('Sign Up', style: TextStyle(fontFamily: 'RobotoSlab')),
+        title: const Text('Sign Up',
+            style: TextStyle(fontFamily: 'RobotoSlab', color: Colors.white)),
+        backgroundColor: widget.backgroundColor,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -48,27 +63,51 @@ class _SignupPageDobState extends State<SignupPageDob> {
               const SizedBox(height: 50),
               const Text(
                 'Enter your date of birth',
-                style: TextStyle(fontFamily: 'RobotoSlab', fontSize: 16),
+                style: TextStyle(
+                    fontFamily: 'RobotoSlab',
+                    fontSize: 20,
+                    color: Colors.white),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () => _selectDate(context),
+                style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(widget.themeColor),
+                  padding: MaterialStateProperty.all<EdgeInsets>(
+                    const EdgeInsets.symmetric(horizontal: 20),
+                  ),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                      side: BorderSide(color: widget.themeColor),
+                    ),
+                  ),
+                ),
                 child: Text(
                   _selectedDate == null
                       ? 'Select Date of Birth'
                       : 'Date of Birth: ${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}',
-                  style: const TextStyle(fontFamily: 'RobotoSlab'),
+                  style: const TextStyle(
+                      fontFamily: 'RobotoSlab',
+                      color: Colors.white,
+                      fontSize: 16),
                 ),
               ),
               const SizedBox(height: 40),
               const Text(
                 'What should we call you?',
-                style: TextStyle(fontFamily: 'RobotoSlab', fontSize: 16),
+                style: TextStyle(
+                    fontFamily: 'RobotoSlab',
+                    fontSize: 20,
+                    color: Colors.white),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 50),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: TextField(
+                  controller: _usernameController,
+                  style: const TextStyle(color: Colors.white), // Text color
                   decoration: InputDecoration(
                     labelText: 'Username',
                     labelStyle: TextStyle(
@@ -85,7 +124,9 @@ class _SignupPageDobState extends State<SignupPageDob> {
                       borderSide: const BorderSide(color: Colors.grey),
                     ),
                   ),
-                  style: const TextStyle(fontFamily: 'RobotoSlab'),
+                  onChanged: (text) {
+                    setState(() {});
+                  },
                 ),
               ),
               const SizedBox(height: 40),
@@ -97,15 +138,15 @@ class _SignupPageDobState extends State<SignupPageDob> {
                           MaterialPageRoute(
                             builder: (context) => SignupPageGender(
                               themeColor: widget.themeColor,
+                              backgroundColor: widget.backgroundColor,
                               signupData: SignupData(
-                                email: widget.signupData.email,
-                                password: widget.signupData.password,
-                                username: '',
-                                dob: _selectedDate,
-                                gender: null,
-                                height: 0,
-                                weight: 0,
-                              ),
+                                  email: widget.signupData.email,
+                                  password: widget.signupData.password,
+                                  username: _usernameController.text,
+                                  dob: _selectedDate!,
+                                  gender: '',
+                                  height: 0,
+                                  weight: 0),
                             ),
                           ),
                         );

@@ -5,7 +5,13 @@ import 'package:my_project/home_screen.dart';
 
 class LoginPage extends StatefulWidget {
   final Color themeColor;
-  const LoginPage({super.key, required this.themeColor});
+  final Color backgroundColor;
+
+  const LoginPage({
+    super.key,
+    required this.themeColor,
+    required this.backgroundColor,
+  });
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -33,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:8000/login/'),
+        Uri.parse('http://192.168.100.9:8000/user/login/'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': email,
@@ -46,15 +52,12 @@ class _LoginPageState extends State<LoginPage> {
       });
 
       if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-        final String token = responseData['token'];
-
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => HomeScreen(
               themeColor: widget.themeColor,
-              token: token,
+              backgroundColor: widget.backgroundColor,
             ),
           ),
         );
@@ -82,8 +85,12 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: widget.backgroundColor,
       appBar: AppBar(
-        title: const Text('Login', style: TextStyle(fontFamily: 'RobotoSlab')),
+        title: const Text('Login',
+            style: TextStyle(fontFamily: 'RobotoSlab', color: Colors.white)),
+        backgroundColor: widget.backgroundColor,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Center(
         child: Column(
@@ -94,13 +101,15 @@ class _LoginPageState extends State<LoginPage> {
               style: TextStyle(
                 fontFamily: 'RobotoSlab',
                 fontSize: 30,
+                color: Colors.white, // Text color for dark background
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 50),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: TextField(
                 controller: _emailController,
+                style: const TextStyle(color: Colors.white), // Text color
                 decoration: InputDecoration(
                   labelText: 'Email',
                   labelStyle: TextStyle(color: widget.themeColor),
@@ -123,6 +132,7 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: TextField(
                 controller: _passwordController,
+                style: const TextStyle(color: Colors.white), // Text color
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: 'Password',
@@ -162,13 +172,14 @@ class _LoginPageState extends State<LoginPage> {
                   : const Text(
                       'Login',
                       style: TextStyle(
-                          fontFamily: 'RobotoSlab',
-                          color: Colors.white,
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold),
+                        fontFamily: 'RobotoSlab',
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 100),
           ],
         ),
       ),

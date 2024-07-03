@@ -6,11 +6,13 @@ import 'package:my_project/signup_model.dart';
 
 class SignupPageGender extends StatefulWidget {
   final Color themeColor;
+  final Color backgroundColor;
   final SignupData signupData;
 
   const SignupPageGender({
     super.key,
     required this.themeColor,
+    required this.backgroundColor,
     required this.signupData,
   });
 
@@ -90,27 +92,32 @@ class _SignupPageGenderState extends State<SignupPageGender> {
         }),
       );
 
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
       if (_isMounted) {
         setState(() {
           _isLoading = false;
         });
       }
 
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-        final String token = responseData['token'];
-        Navigator.pushReplacement(
+      if (response.statusCode == 201) {
+        Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => HomeScreen(
               themeColor: widget.themeColor,
-              token: token,
+              backgroundColor: widget.backgroundColor,
             ),
           ),
         );
       } else {
+        final errorResponse = jsonDecode(response.body);
+        print('Error response: $errorResponse');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Submission failed: ${response.statusCode}')),
+          SnackBar(
+              content: Text(
+                  'Submission failed: ${response.statusCode} - ${errorResponse['detail'] ?? 'Unknown error'}')),
         );
       }
     } catch (error) {
@@ -129,9 +136,12 @@ class _SignupPageGenderState extends State<SignupPageGender> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: widget.backgroundColor,
       appBar: AppBar(
-        title:
-            const Text('Sign Up', style: TextStyle(fontFamily: 'RobotoSlab')),
+        title: const Text('Sign Up',
+            style: TextStyle(fontFamily: 'RobotoSlab', color: Colors.white)),
+        backgroundColor: widget.backgroundColor,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -141,12 +151,16 @@ class _SignupPageGenderState extends State<SignupPageGender> {
             const SizedBox(height: 50),
             const Text(
               'Gender',
-              style: TextStyle(fontFamily: 'RobotoSlab', fontSize: 20),
+              style: TextStyle(
+                  fontFamily: 'RobotoSlab', fontSize: 20, color: Colors.white),
             ),
             RadioListTile<String>(
               title: const Text(
                 'Male',
-                style: TextStyle(fontFamily: 'RobotoSlab', fontSize: 18),
+                style: TextStyle(
+                    fontFamily: 'RobotoSlab',
+                    fontSize: 18,
+                    color: Colors.white),
               ),
               value: 'Male',
               groupValue: _selectedGender,
@@ -163,7 +177,10 @@ class _SignupPageGenderState extends State<SignupPageGender> {
             RadioListTile<String>(
               title: const Text(
                 'Female',
-                style: TextStyle(fontFamily: 'RobotoSlab', fontSize: 18),
+                style: TextStyle(
+                    fontFamily: 'RobotoSlab',
+                    fontSize: 18,
+                    color: Colors.white),
               ),
               value: 'Female',
               groupValue: _selectedGender,
@@ -177,7 +194,7 @@ class _SignupPageGenderState extends State<SignupPageGender> {
               activeColor: widget.themeColor,
               dense: true,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 40),
             TextFormField(
               controller: _heightController,
               keyboardType: TextInputType.number,
@@ -197,7 +214,8 @@ class _SignupPageGenderState extends State<SignupPageGender> {
                   borderSide: const BorderSide(color: Colors.grey),
                 ),
               ),
-              style: const TextStyle(fontFamily: 'RobotoSlab'),
+              style: const TextStyle(
+                  fontFamily: 'RobotoSlab', color: Colors.white),
             ),
             const SizedBox(height: 30),
             TextFormField(
@@ -219,9 +237,10 @@ class _SignupPageGenderState extends State<SignupPageGender> {
                   borderSide: const BorderSide(color: Colors.grey),
                 ),
               ),
-              style: const TextStyle(fontFamily: 'RobotoSlab'),
+              style: const TextStyle(
+                  fontFamily: 'RobotoSlab', color: Colors.white),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 60),
             ElevatedButton(
               onPressed: _isSubmitEnabled ? _submitForm : null,
               style: ButtonStyle(
