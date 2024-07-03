@@ -55,14 +55,18 @@ def is_item_food(item_name):
         return False
 
 
-def get_nutrients_per_100grams(food_name):
+def get_nutrients_per_100grams_or_100ml(food_name, is_drink):
     is_food = is_item_food(food_name)
-    
+    # TODO: add a function for validation check if item is liquid or not
     if not is_food:
         return False
+    
+    unit = "grams"
+    if is_drink:
+        unit = "milliliters"
 
     input_prompt = f"""
-            You are an expert nutritionist. You need to analyze the food item and calculate its nutritional content per 100 grams, including calories, protein, fat, carbohydrates, and minerals. Additionally, determine the quantity of this food (in grams) that should be consumed for a balanced diet. If the food is considered a bad diet in any quantity, return the answer as 0 grams.
+            You are an expert nutritionist. You need to analyze the food item and calculate its nutritional content per 100 {unit}, including calories, protein, fat, carbohydrates, and minerals.
 
             Please provide the answer in the following format:
 
@@ -72,7 +76,6 @@ def get_nutrients_per_100grams(food_name):
             carbohydrates = [quantity_of_carbohydrates]
             minerals = [quantity_of_minerals]
 
-            Recommended quantity of the food for a balanced diet of each day: [quantity_in_grams] grams
 
             NOTE: For this analysis, use a standard recipe for {food_name}.
             but make sure you give me single number of each nutrient, don't give me the range, you can select the lower value if there is a range
@@ -88,8 +91,7 @@ def get_nutrients_per_100grams(food_name):
     return nutrients
     
 
-def calculate_nutritional_values(food_item, quantity):
-    
+def calculate_nutritional_values(food_item, quantity, is_drink_):
     try:
         food = Food.objects.get(name=food_item)
         nutrients = {
@@ -99,20 +101,23 @@ def calculate_nutritional_values(food_item, quantity):
             'carbohydrates': food.carbohydrates,
             'minerals': food.minerals,
         }
+        is_drink = food.is_drink
     
     except Food.DoesNotExist:
-        nutrients_per_100g = get_nutrients_per_100grams(food_item)
-        if not nutrients_per_100g:
+        is_drink = is_drink_
+        nutrients_per_100g_or_100ml = get_nutrients_per_100grams_or_100ml(food_item, is_drink)
+        if not nutrients_per_100g_or_100ml:
             return "Error: Unable to determine the nutrients for the specified food item."
         
         # Use serializer to save the food data
         food_data = {
             'name': food_item,
-            'calories': nutrients_per_100g.get('calories', 0),
-            'protein': nutrients_per_100g.get('protein', 0),
-            'fat': nutrients_per_100g.get('fat', 0),
-            'carbohydrates': nutrients_per_100g.get('carbohydrates', 0),
-            'minerals': nutrients_per_100g.get('minerals', 0)
+            'calories': nutrients_per_100g_or_100ml.get('calories', 0),
+            'protein': nutrients_per_100g_or_100ml.get('protein', 0),
+            'fat': nutrients_per_100g_or_100ml.get('fat', 0),
+            'carbohydrates': nutrients_per_100g_or_100ml.get('carbohydrates', 0),
+            'minerals': nutrients_per_100g_or_100ml.get('minerals', 0),
+            'is_drink': is_drink
         }
 
         food_serializer = FoodSerializer(data=food_data)
@@ -120,18 +125,8 @@ def calculate_nutritional_values(food_item, quantity):
             food_serializer.save()
         else:
             return food_serializer.errors
-        
-        # save the food in the Food Table
-        # Food.objects.create(
-        #     name = food_item,
-        #     calories =  nutrients_per_100g.get('calories', 0),
-        #     protein = nutrients_per_100g.get('protein', 0),
-        #     fat = nutrients_per_100g.get('fat', 0),
-        #     carbohydrates = nutrients_per_100g.get('carbohydrates', 0),
-        #     minerals = nutrients_per_100g.get('minerals', 0),
-        # )
 
-        nutrients = nutrients_per_100g
+        nutrients = nutrients_per_100g_or_100ml
 
     scaled_nutrients = {nutrient: (amount * quantity / 100) for nutrient, amount in nutrients.items()}    
 

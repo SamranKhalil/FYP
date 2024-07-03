@@ -24,6 +24,7 @@ class NutritionalIntake(models.Model):
     carbohydrates = models.DecimalField(max_digits=10, decimal_places=2)
     minerals = models.DecimalField(max_digits=10, decimal_places=2)
     calories = models.DecimalField(max_digits=10, decimal_places=2)
+    quantity = models.CharField(max_length=255, default='100 grams')
 
     def __str__(self):
         return f"{self.user.username} - {self.timestamp}"
@@ -36,6 +37,29 @@ class Food(models.Model):
     fat = models.DecimalField(max_digits=10, decimal_places=2)
     carbohydrates = models.DecimalField(max_digits=10, decimal_places=2)
     minerals = models.DecimalField(max_digits=10, decimal_places=2)
+    is_drink = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
+    
+
+class Goal(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    target_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    unit = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+class UserDailyGoalStatus(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    goal = models.ForeignKey(Goal, on_delete=models.CASCADE)
+    date = models.DateField()
+    amount_achieved = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        unique_together = ('user', 'goal', 'date')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.goal.name} - {self.date}"

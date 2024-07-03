@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, NutritionalIntake, Food
+from .models import User, NutritionalIntake, Food, Goal, UserDailyGoalStatus
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,13 +15,24 @@ class UserSerializer(serializers.ModelSerializer):
 class NutritionalIntakeSerializer(serializers.ModelSerializer):
     class Meta:
         model = NutritionalIntake
-        fields = ['id', 'user', 'timestamp', 'food_name', 'protein', 'fat', 'carbohydrates', 'minerals', 'calories']
+        fields = ['id', 'user', 'timestamp', 'food_name', 'protein', 'fat', 'carbohydrates', 'minerals', 'calories', 'quantity' ]
 
 class FoodSerializer(serializers.ModelSerializer):
     class Meta:
         model = Food
-        fields = ['name', 'calories', 'protein', 'fat', 'carbohydrates', 'minerals']
+        fields = ['name', 'calories', 'protein', 'fat', 'carbohydrates', 'minerals', 'is_drink']
 
 class DateRangeSerializer(serializers.Serializer):
     start_date = serializers.DateField()
     end_date = serializers.DateField()
+
+
+class GoalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Goal
+        fields = ['id', 'name', 'description', 'target_amount', 'unit']
+
+class UserDailyGoalStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserDailyGoalStatus
+        fields = ['id', 'user', 'goal', 'date', 'amount_achieved']

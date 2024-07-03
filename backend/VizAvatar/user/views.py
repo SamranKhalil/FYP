@@ -3,8 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.hashers import make_password, check_password
-from .models import User, NutritionalIntake
-from .serializers import UserSerializer, NutritionalIntakeSerializer, DateRangeSerializer
+from .models import User, NutritionalIntake, Goal, UserDailyGoalStatus
+from .serializers import UserSerializer, NutritionalIntakeSerializer, DateRangeSerializer, UserDailyGoalStatusSerializer
 from django.utils import timezone
 from .utils import calculate_nutritional_values
 from rest_framework.permissions import IsAuthenticated
@@ -45,18 +45,24 @@ class AddNutritionalIntakeView(APIView):
     def post(self, request, *args, **kwargs):
         food_item = request.data.get('food_item')
         quantity = request.data.get('quantity')
+        is_drink = request.data.get('is_drink')
         user = request.user
 
-        if not food_item or not quantity:
-            return Response({'error': 'Food item and quantity are required'}, status=status.HTTP_400_BAD_REQUEST)
+        if not food_item or not quantity or not is_drink:
+            return Response({'error': 'Food item and quantity and category are required'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             quantity = float(quantity)
-            nutritional_values = calculate_nutritional_values(food_item, quantity)
+            nutritional_values = calculate_nutritional_values(food_item, quantity, is_drink)
             if isinstance(nutritional_values, str):
                 return Response({'error': nutritional_values}, status=status.HTTP_400_BAD_REQUEST)
         except ValueError as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+        units = "grams"
+        if is_drink:
+            units = "milliliters"
+        quantity_of_user_food_intake = str(quantity) + units
 
         data = {
             'user': user.id,
@@ -67,6 +73,7 @@ class AddNutritionalIntakeView(APIView):
             'carbohydrates': nutritional_values.get('carbohydrates', 0),
             'minerals': nutritional_values.get('minerals', 0),
             'calories': nutritional_values.get('calories', 0),
+            'quantity': quantity_of_user_food_intake
         }
 
         serializer = NutritionalIntakeSerializer(data=data)
@@ -107,7 +114,7 @@ class NutritionalSummaryView(APIView):
             else:
                 protein_percentage = fat_percentage = carbohydrates_percentage = minerals_percentage = 0
             
-            food_list = intakes.values('food_name').annotate(calories=Sum('calories')).order_by('-timestamp')
+            food_list = intakes.values('food_name', 'calories', 'quantity', 'timestamp').order_by('-timestamp')
             
             result = {
                 'nutrients': {
@@ -123,3 +130,46 @@ class NutritionalSummaryView(APIView):
             return Response(result, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+
+
+class UpdateDailyGoalStatusView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        goal_id = request.data.get('goal_id')
+        amount_achieved = request.data.get('amount_achieved')
+        date = request.data.get('date', timezone.now().date())  # Default to today if not provided
+
+        if not goal_id or not amount_achieved:
+            return Response({'error': 'Goal ID and amount achieved are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            goal = Goal.objects.get(id=goal_id)
+        except Goal.DoesNotExist:
+            return Response({'error': 'Goal not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        record, created = UserDailyGoalStatus.objects.update_or_create(
+            user=user,
+            goal=goal,
+            date=date,
+            defaults={'amount_achieved': amount_achieved}
+        )
+
+        serializer = UserDailyGoalStatusSerializer(record)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class DailyGoalSummaryView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        date = request.query_params.get('date', timezone.now().date())  # Default to today if not provided
+        statuses = UserDailyGoalStatus.objects.filter(user=user, date=date)
+
+        if not statuses.exists():
+            return Response({'message': 'No data found for the given date'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UserDailyGoalStatusSerializer(statuses, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

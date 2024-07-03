@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'user'
 ]
 
+AUTH_USER_MODEL = 'user.User'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -85,7 +87,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'vizavatar',
         'USER': 'postgres',
-        'PASSWORD': 'MaskH0@d',
+        'PASSWORD': 'Mashhood',
         'HOST': 'localhost',  # or the address of your database server
         'PORT': '5432',       # default PostgreSQL port
     }
