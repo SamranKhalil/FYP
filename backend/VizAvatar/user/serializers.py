@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, NutritionalIntake, Food, Goal, UserDailyGoalStatus
+from .models import User, NutritionalIntake, Food, Goal, UserDailyGoalStatus, DailyHealthRecord
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -52,3 +52,8 @@ class UserDailyGoalStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserDailyGoalStatus
         fields = ['id', 'user', 'goal', 'date', 'amount_achieved']
+
+class DailyHealthRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DailyHealthRecord
+        fields = ['user', 'date', 'sex', 'age', 'currentSmoker', 'cigsPerDay', 'BPmeds', 'prevalentStroke', 'prevalentHyp', 'diabetes', 'totChol', 'sysBP', 'diaBP', 'BMI', 'heartRate', 'glucose']

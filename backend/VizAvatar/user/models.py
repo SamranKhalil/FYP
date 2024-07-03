@@ -87,3 +87,33 @@ class UserDailyGoalStatus(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.goal.name} - {self.date}"
+
+class DailyHealthRecord(models.Model):
+    SEX_CHOICES = [
+        (0, 'Female'),
+        (1, 'Male'),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    date = models.DateField()
+    sex = models.IntegerField(choices=SEX_CHOICES)
+    age = models.IntegerField()
+    currentSmoker = models.IntegerField(choices=[(0, 'No'), (1, 'Yes')])
+    cigsPerDay = models.IntegerField(null=True, blank=True)
+    BPmeds = models.IntegerField(choices=[(0, 'No'), (1, 'Yes')])
+    prevalentStroke = models.IntegerField(choices=[(0, 'No'), (1, 'Yes')])
+    prevalentHyp = models.IntegerField(choices=[(0, 'No'), (1, 'Yes')])
+    diabetes = models.IntegerField(choices=[(0, 'No'), (1, 'Yes')])
+    totChol = models.DecimalField(max_digits=5, decimal_places=2)
+    sysBP = models.DecimalField(max_digits=5, decimal_places=2)
+    diaBP = models.DecimalField(max_digits=5, decimal_places=2)
+    BMI = models.DecimalField(max_digits=5, decimal_places=2)
+    heartRate = models.IntegerField()
+    glucose = models.DecimalField(max_digits=5, decimal_places=2)
+
+    class Meta:
+        unique_together = ('user', 'date')
+        db_table = 'daily_health_records'
+
+    def __str__(self):
+        return f"{self.user.username} - {self.date}"

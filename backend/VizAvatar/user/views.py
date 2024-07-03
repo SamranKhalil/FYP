@@ -3,8 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.hashers import make_password, check_password
-from .models import User, NutritionalIntake, Goal, UserDailyGoalStatus
-from .serializers import UserSerializer, NutritionalIntakeSerializer, DateRangeSerializer, UserDailyGoalStatusSerializer
+from .models import User, NutritionalIntake, Goal, UserDailyGoalStatus, DailyHealthRecord
+from .serializers import UserSerializer, NutritionalIntakeSerializer, DateRangeSerializer, UserDailyGoalStatusSerializer, DailyHealthRecordSerializer
 from django.utils import timezone
 from .utils import calculate_nutritional_values
 from rest_framework.permissions import IsAuthenticated
@@ -172,4 +172,27 @@ class DailyGoalSummaryView(APIView):
             return Response({'message': 'No data found for the given date'}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = UserDailyGoalStatusSerializer(statuses, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+# TODO: test this either this view is working fine in all use cases or not
+class DailyHealthRecordView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = DailyHealthRecordSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        date = request.query_params.get('date')
+        if date:
+            records = DailyHealthRecord.objects.filter(user=user, date=date)
+        else:
+            records = DailyHealthRecord.objects.filter(user=user)
+        serializer = DailyHealthRecordSerializer(records, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
