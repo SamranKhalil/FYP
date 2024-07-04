@@ -1,0 +1,24 @@
+### Signup a new user
+POST http://127.0.0.1:8000/user/signup/
+Content-Type: application/json
+
+{
+  "email": "mushi@example.com",
+  "password": "testpassword123",
+  "username": "mushiuser",
+  "age": 25,
+  "gender": "male",
+  "height": 175.5,
+  "weight": 70.0
+}
+
+# Authorization: f77e06f61cdcc94856eab7a17fe702b675f85c5e
+### Login into account
+POST http://127.0.0.1:8000/user/login/
+Content-Type: application/json
+
+{
+    "email" : "mushi@example.com",
+    "password": "testpassword123"
+}
+

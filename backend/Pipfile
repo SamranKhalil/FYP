@@ -11,6 +11,7 @@ django-cors-headers = "*"
 "google.generativeai" = "*"
 python-dotenv = "*"
 djangorestframework-simplejwt = "*"
+bcrypt = "*"
 
 [dev-packages]
 
