@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:my_project/home_screen.dart';
 import 'package:my_project/signup_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignupPageGender extends StatefulWidget {
   final Color themeColor;
@@ -102,6 +103,12 @@ class _SignupPageGenderState extends State<SignupPageGender> {
       }
 
       if (response.statusCode == 201) {
+        final responseData = jsonDecode(response.body);
+        final token = responseData['token'];
+
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', token);
+
         Navigator.push(
           context,
           MaterialPageRoute(
