@@ -12,14 +12,18 @@ from django.db.models import Sum
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 class UserSignup(APIView):
     def post(self, request, *args, **kwargs):
         data = request.data.copy()
-        data['password'] = make_password(data['password'])
+        # data['password'] = make_password(data['password'])
         serializer = UserSerializer(data=data)
         if serializer.is_valid():
             user = serializer.save()
-            token, created = Token.objects.create(user=user)
+            token = Token.objects.create(user=user)
             response_data = serializer.data
             response_data['token'] = token.key
             return Response(response_data, status=status.HTTP_201_CREATED)
@@ -29,14 +33,18 @@ class UserLogin(APIView):
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
         password = request.data.get('password')
+        print("email",email)
+        print("password",password)
         try:
             user = User.objects.get(email=email)
+            print("user.password", user.password)
             if check_password(password, user.password):
                 token, created = Token.objects.get_or_create(user=user)
                 return Response({'message': 'Login successful!', 'token': token.key}, status=status.HTTP_200_OK)
+            logger.warning(f'Password mismatch for user: {user.email}')
             return Response({'error': 'Invalid email or password '}, status=status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist:
-            return Response({'error': 'Invalid Email or password'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'User Doest not Exists'}, status=status.HTTP_400_BAD_REQUEST)
 
 class AddNutritionalIntakeView(APIView):
     authentication_classes = [TokenAuthentication]
