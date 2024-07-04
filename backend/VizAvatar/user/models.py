@@ -1,6 +1,9 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from .helper import generate_confirmation_code
+from django.utils import timezone
+from datetime import timedelta
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -26,7 +29,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     weight = models.DecimalField(max_digits=5, decimal_places=2, blank=False, null=False)
     email = models.EmailField(unique=True, blank=False, null=False)
     password = models.CharField(max_length=255, blank=False, null=False)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
 
@@ -117,3 +120,20 @@ class DailyHealthRecord(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.date}"
+
+class EmailConfirmation(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='email_confirmation')
+    confirmation_code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_confirmed = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if not self.confirmation_code:
+            self.confirmation_code = generate_confirmation_code()
+        super().save(*args, **kwargs)
+
+    def is_expired(self):
+        return timezone.now() > self.created_at + timezone.timedelta(hours=1)
+    
+    def __str__(self):
+        return f'{self.user.email} - {self.confirmation_code}'

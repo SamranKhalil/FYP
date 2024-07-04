@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.hashers import make_password, check_password
-from .models import User, NutritionalIntake, Goal, UserDailyGoalStatus, DailyHealthRecord
+from .models import User, NutritionalIntake, Goal, UserDailyGoalStatus, DailyHealthRecord,EmailConfirmation
 from .serializers import UserSerializer, NutritionalIntakeSerializer, DateRangeSerializer, UserDailyGoalStatusSerializer, DailyHealthRecordSerializer
 from django.utils import timezone
 from .utils import calculate_nutritional_values
@@ -11,6 +11,8 @@ from rest_framework.permissions import IsAuthenticated
 from django.db.models import Sum
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
+from .helper import send_confirmation_email, generate_confirmation_code
+from django.shortcuts import get_object_or_404
 
 import logging
 
@@ -23,11 +25,68 @@ class UserSignup(APIView):
         serializer = UserSerializer(data=data)
         if serializer.is_valid():
             user = serializer.save()
-            token = Token.objects.create(user=user)
-            response_data = serializer.data
-            response_data['token'] = token.key
-            return Response(response_data, status=status.HTTP_201_CREATED)
+            email_confirmation = EmailConfirmation.objects.create(user=user)
+            send_confirmation_email(user.email, email_confirmation.confirmation_code)
+            # token = Token.objects.create(user=user)
+            # response_data = serializer.data
+            # response_data['token'] = token.key
+            # return Response(response_data, status=status.HTTP_201_CREATED)
+            return Response({'message': 'Confirmation code sent to your email'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ConfirmEmail(APIView):
+    def post(self, request, *args, **kwargs):
+        confirmation_code = request.data.get('confirmation_code')
+        try:
+            # email_confirmation = get_object_or_404(EmailConfirmation, confirmation_code=confirmation_code)
+            email_confirmation = EmailConfirmation.objects.get(confirmation_code=confirmation_code)
+
+            if email_confirmation.is_confirmed:
+                return Response({'error': 'Confirmation code already used'}, status=status.HTTP_400_BAD_REQUEST)
+        
+            if email_confirmation.is_expired():
+                return Response({'error': 'Confirmation code expired'}, status=status.HTTP_400_BAD_REQUEST)
+
+            email_confirmation.is_confirmed = True
+            email_confirmation.save()
+
+            user = email_confirmation.user
+            user.is_active = True
+            user.save()
+        
+            token = Token.objects.create(user=user)
+            
+            return Response({'message': 'Email confirmed successfully', 'token': token.key}, status=status.HTTP_200_OK)
+        
+        except EmailConfirmation.DoesNotExist:
+            return Response({'error': 'Invalid confirmation code'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+class ResendConfirmationCode(APIView):
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        user = get_object_or_404(User, email=email)
+        
+        if user.email_confirmation.is_confirmed:
+            return Response({'error': 'Email already confirmed'}, status=status.HTTP_400_BAD_REQUEST)
+
+        email_confirmation = user.email_confirmation
+        email_confirmation.confirmation_code = generate_confirmation_code()
+        email_confirmation.created_at = timezone.now()
+        email_confirmation.save()
+
+        send_confirmation_email(user.email, email_confirmation.confirmation_code)
+        # send_mail(
+        #     'Your New Confirmation Code',
+        #     f'Your new confirmation code is {email_confirmation.confirmation_code}',
+        #     'from@example.com',
+        #     [user.email],
+        #     fail_silently=False,
+        # )
+
+        return Response({'message': 'New confirmation code sent to your email'}, status=status.HTTP_200_OK)
 
 class UserLogin(APIView):
     def post(self, request, *args, **kwargs):
@@ -36,9 +95,12 @@ class UserLogin(APIView):
         print("email",email)
         print("password",password)
         try:
+            # user = get_object_or_404(User, email=email)
+            # email_confirmation = get_object_or_404(EmailConfirmation, user=user)
             user = User.objects.get(email=email)
-            print("user.password", user.password)
             if check_password(password, user.password):
+                if not user.is_active:
+                    return Response({'error': 'Email not confirmed. Please confirm your email before logging in.'}, status=status.HTTP_400_BAD_REQUEST)
                 token, created = Token.objects.get_or_create(user=user)
                 return Response({'message': 'Login successful!', 'token': token.key}, status=status.HTTP_200_OK)
             logger.warning(f'Password mismatch for user: {user.email}')
