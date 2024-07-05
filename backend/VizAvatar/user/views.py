@@ -252,7 +252,7 @@ class DailyHealthRecordView(APIView):
         data['prevalentStroke'] = user.prevalentStroke
         data['prevalentHyp'] = user.prevalentHypertension
         data['diabetes'] = user.diabetes
-        data['BPmeds'] = user.BPmeds
+        data['currentSmoker'] = user.currentSmoker
 
         serializer = DailyHealthRecordSerializer(data=request.data)
         if serializer.is_valid():
