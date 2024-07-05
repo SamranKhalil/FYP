@@ -37,6 +37,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     prevalentHypertension = models.BooleanField(default=False)
     diabetes = models.BooleanField(default=False)
     dob = models.DateField(blank=True, null=True)
+    currentSmoker = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'age', 'gender', 'height', 'weight']

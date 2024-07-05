@@ -13,6 +13,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
 from .helper import send_confirmation_email, generate_confirmation_code
 from django.shortcuts import get_object_or_404
+from datetime import date
 
 import logging
 
@@ -21,7 +22,6 @@ logger = logging.getLogger(__name__)
 class UserSignup(APIView):
     def post(self, request, *args, **kwargs):
         data = request.data.copy()
-        # data['password'] = make_password(data['password'])
         serializer = UserSerializer(data=data)
         if serializer.is_valid():
             user = serializer.save()
@@ -34,7 +34,6 @@ class ConfirmEmail(APIView):
     def post(self, request, *args, **kwargs):
         confirmation_code = request.data.get('confirmation_code')
         try:
-            # email_confirmation = get_object_or_404(EmailConfirmation, confirmation_code=confirmation_code)
             email_confirmation = EmailConfirmation.objects.get(confirmation_code=confirmation_code)
 
             if email_confirmation.is_confirmed:
@@ -72,16 +71,7 @@ class ResendConfirmationCode(APIView):
         email_confirmation.confirmation_code = generate_confirmation_code()
         email_confirmation.created_at = timezone.now()
         email_confirmation.save()
-
         send_confirmation_email(user.email, email_confirmation.confirmation_code)
-        # send_mail(
-        #     'Your New Confirmation Code',
-        #     f'Your new confirmation code is {email_confirmation.confirmation_code}',
-        #     'from@example.com',
-        #     [user.email],
-        #     fail_silently=False,
-        # )
-
         return Response({'message': 'New confirmation code sent to your email'}, status=status.HTTP_200_OK)
 
 class UserLogin(APIView):
@@ -91,8 +81,6 @@ class UserLogin(APIView):
         print("email",email)
         print("password",password)
         try:
-            # user = get_object_or_404(User, email=email)
-            # email_confirmation = get_object_or_404(EmailConfirmation, user=user)
             user = User.objects.get(email=email)
             if check_password(password, user.password):
                 if not user.is_active:
@@ -246,7 +234,26 @@ class DailyHealthRecordView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
+    def calculate_age(self, dob):
+        today = date.today()
+        return today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+
     def post(self, request, *args, **kwargs):
+        
+        user = request.user
+        
+        age = self.calculate_age(user.dob)
+        
+        # Prepare data for the serializer
+        data = request.data.copy()
+        data['user'] = user.id
+        data['age'] = age
+        data['sex'] = 1 if user.gender.lower() == 'male' else 0
+        data['prevalentStroke'] = user.prevalentStroke
+        data['prevalentHyp'] = user.prevalentHypertension
+        data['diabetes'] = user.diabetes
+        data['currentSmoker'] = user.currentSmoker
+
         serializer = DailyHealthRecordSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -262,3 +269,10 @@ class DailyHealthRecordView(APIView):
             records = DailyHealthRecord.objects.filter(user=user)
         serializer = DailyHealthRecordSerializer(records, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class ValidateTokenView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        return Response({'message': 'Token is valid'}, status=status.HTTP_200_OK)
