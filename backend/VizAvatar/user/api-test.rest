@@ -3,9 +3,9 @@ POST http://127.0.0.1:8000/user/signup/
 Content-Type: application/json
 
 {
-  "email": "sam123@yopmail.com",
+  "email": "mash@yopmail.com",
   "password": "testpassword123",
-  "username": "sam123",
+  "username": "mash",
   "age": 25,
   "gender": "male",
   "height": 175.5,
@@ -22,7 +22,7 @@ POST http://127.0.0.1:8000/user/login/
 Content-Type: application/json
 
 {
-    "email" : "mashhoodzaidi123@yopmail.com",
+    "email" : "mash@yopmail.com",
     "password": "testpassword123"
 }
 ### Confirm Email
@@ -30,8 +30,34 @@ POST http://127.0.0.1:8000/user/confirm-email/
 Content-Type: application/json
 
 {
-  "confirmation_code": "D89p35"
+  "confirmation_code": "fFBfYC"
 }
 
 
-# 31b5888b29cceae3c55eece878037b12d31ca5f1
+# 38e1321a8201a17cd6aef90ac90da7c58d39f77a
+
+### add nutrient intake
+POST http://127.0.0.1:8000/user/intake/add/
+Content-Type: application/json
+Authorization: Token 38e1321a8201a17cd6aef90ac90da7c58d39f77a
+
+{
+  "food_item": "Mango",
+  "quantity": 100,
+  "is_drink": false
+}
+
+### Check user login
+GET http://127.0.0.1:8000/user/is-user-login
+Authorization: Token 38e1321a8201a17cd6aef90ac90da7c58d39f77a
+
+
+### Get food intake summary
+POST http://127.0.0.1:8000/user/intake/summary/
+Content-Type: application/json
+Authorization: Token 38e1321a8201a17cd6aef90ac90da7c58d39f77a
+
+{
+  "start_date": "2024-07-05",
+  "end_date": "2024-07-05"
+}
