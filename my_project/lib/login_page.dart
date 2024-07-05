@@ -55,14 +55,12 @@ class _LoginPageState extends State<LoginPage> {
       print(response.statusCode);
       print(response.body);
       if (response.statusCode == 200) {
-        // Save token to SharedPreferences
         final data = jsonDecode(response.body);
         final accessToken = data['token'];
 
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('access_token', accessToken);
 
-        // Navigate to HomeScreen
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
