@@ -57,13 +57,12 @@ class _LoginPageState extends State<LoginPage> {
       print(response.body);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final accessToken = data['token'];
         final isActive = data['isActive'];
 
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('access_token', accessToken);
-
         if (isActive) {
+          final accessToken = data['token'];
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('access_token', accessToken);
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -75,7 +74,9 @@ class _LoginPageState extends State<LoginPage> {
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Please verify your email')),
+            const SnackBar(
+                content: Text(
+                    'Email not confirmed. Please confirm your email before logging in.')),
           );
           Navigator.pushReplacement(
             context,
