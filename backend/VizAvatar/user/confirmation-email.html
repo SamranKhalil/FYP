@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background-color: #add8e6;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: -3px 9px 8px rgb(0 0 0 / 77%);
+            padding: 20px;
+            max-width: 400px;
+            margin: 50px auto;
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+            min-height: 300px;
+        }
+        .confirmation-code {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .bold{
+          font-weight: bold;
+        }
+        .center-div{
+          width: 100%;
+          border-radius: 30px;
+          border: 2px solid black;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <p class="bold"> Hey There Health Freak!</p>
+        <p> We welcome you to join the VizAvatar Family where you can improve your health and keep track of your health in order
+        to avoid the Cardiovascular Issues for future.
+        </p>
+        <br />
+        <p>
+         You are just one step away From becoming the official partner of the VizAvatar Family. 
+        </p>
+        <br />
+        <p> Here is your One-Time confirmation code which you have to write in the application in order to complete the Signup Process </p>
+        <br />
+        <p> <span class="bold">Note :</span> This Code will expire after 1 hour.</p>
+        <div class="center-div">
+        <p class="confirmation-code"> {{ confirmation_code }}</p>
+        </div>
+    </div>
+</body>
+</html>

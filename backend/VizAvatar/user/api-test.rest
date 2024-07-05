@@ -3,9 +3,9 @@ POST http://127.0.0.1:8000/user/signup/
 Content-Type: application/json
 
 {
-  "email": "mashhood@yopmail.com",
+  "email": "sam12@yopmail.com",
   "password": "testpassword123",
-  "username": "mashhood",
+  "username": "sam12",
   "age": 25,
   "gender": "male",
   "height": 175.5,
@@ -17,7 +17,7 @@ POST http://127.0.0.1:8000/user/login/
 Content-Type: application/json
 
 {
-    "email" : "mashhood@yopmail.com",
+    "email" : "mashhoodzaidi123@yopmail.com",
     "password": "testpassword123"
 }
 ### Confirm Email
