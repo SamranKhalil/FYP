@@ -3,13 +3,17 @@ POST http://127.0.0.1:8000/user/signup/
 Content-Type: application/json
 
 {
-  "email": "mashhood@yopmail.com",
+  "email": "sam123@yopmail.com",
   "password": "testpassword123",
-  "username": "mashhood",
+  "username": "sam123",
   "age": 25,
   "gender": "male",
   "height": 175.5,
-  "weight": 70.0
+  "weight": 70.0,
+  "dob": "1999-01-15",
+  "prevalentStroke": false,
+  "prevalentHypertension": false,
+  "diabetes": false
 }
 
 ### Login into account
@@ -17,7 +21,7 @@ POST http://127.0.0.1:8000/user/login/
 Content-Type: application/json
 
 {
-    "email" : "mashhood@yopmail.com",
+    "email" : "mashhoodzaidi123@yopmail.com",
     "password": "testpassword123"
 }
 ### Confirm Email

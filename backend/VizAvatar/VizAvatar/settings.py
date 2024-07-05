@@ -63,7 +63,7 @@ ROOT_URLCONF = 'VizAvatar.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -87,7 +87,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'vizavatar',
         'USER': 'postgres',
-        'PASSWORD': 'MaskH0@d',
+        'PASSWORD': 'Mashhood',
         'HOST': 'localhost',  # or the address of your database server
         'PORT': '5432',       # default PostgreSQL port
     }

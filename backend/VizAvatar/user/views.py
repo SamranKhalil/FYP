@@ -27,10 +27,6 @@ class UserSignup(APIView):
             user = serializer.save()
             email_confirmation = EmailConfirmation.objects.create(user=user)
             send_confirmation_email(user.email, email_confirmation.confirmation_code)
-            # token = Token.objects.create(user=user)
-            # response_data = serializer.data
-            # response_data['token'] = token.key
-            # return Response(response_data, status=status.HTTP_201_CREATED)
             return Response({'message': 'Confirmation code sent to your email'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

@@ -33,6 +33,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
 
+    prevalentStroke = models.BooleanField(default=False)
+    prevalentHypertension = models.BooleanField(default=False)
+    diabetes = models.BooleanField(default=False)
+    dob = models.DateField(blank=True, null=True)
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'age', 'gender', 'height', 'weight']
 
