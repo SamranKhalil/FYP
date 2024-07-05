@@ -21,7 +21,6 @@ logger = logging.getLogger(__name__)
 class UserSignup(APIView):
     def post(self, request, *args, **kwargs):
         data = request.data.copy()
-        # data['password'] = make_password(data['password'])
         serializer = UserSerializer(data=data)
         if serializer.is_valid():
             user = serializer.save()
@@ -34,7 +33,6 @@ class ConfirmEmail(APIView):
     def post(self, request, *args, **kwargs):
         confirmation_code = request.data.get('confirmation_code')
         try:
-            # email_confirmation = get_object_or_404(EmailConfirmation, confirmation_code=confirmation_code)
             email_confirmation = EmailConfirmation.objects.get(confirmation_code=confirmation_code)
 
             if email_confirmation.is_confirmed:
@@ -72,16 +70,7 @@ class ResendConfirmationCode(APIView):
         email_confirmation.confirmation_code = generate_confirmation_code()
         email_confirmation.created_at = timezone.now()
         email_confirmation.save()
-
         send_confirmation_email(user.email, email_confirmation.confirmation_code)
-        # send_mail(
-        #     'Your New Confirmation Code',
-        #     f'Your new confirmation code is {email_confirmation.confirmation_code}',
-        #     'from@example.com',
-        #     [user.email],
-        #     fail_silently=False,
-        # )
-
         return Response({'message': 'New confirmation code sent to your email'}, status=status.HTTP_200_OK)
 
 class UserLogin(APIView):
@@ -91,8 +80,6 @@ class UserLogin(APIView):
         print("email",email)
         print("password",password)
         try:
-            # user = get_object_or_404(User, email=email)
-            # email_confirmation = get_object_or_404(EmailConfirmation, user=user)
             user = User.objects.get(email=email)
             if check_password(password, user.password):
                 if not user.is_active:
