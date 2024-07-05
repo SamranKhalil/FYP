@@ -262,3 +262,10 @@ class DailyHealthRecordView(APIView):
             records = DailyHealthRecord.objects.filter(user=user)
         serializer = DailyHealthRecordSerializer(records, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class ValidateTokenView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        return Response({'message': 'Token is valid'}, status=status.HTTP_200_OK)
