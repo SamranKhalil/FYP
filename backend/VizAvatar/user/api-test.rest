@@ -13,7 +13,8 @@ Content-Type: application/json
   "dob": "1999-01-15",
   "prevalentStroke": false,
   "prevalentHypertension": false,
-  "diabetes": false
+  "diabetes": false,
+  "currentSmoker": false
 }
 
 ### Login into account
