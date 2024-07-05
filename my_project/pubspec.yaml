@@ -71,7 +71,6 @@ flutter:
   assets:
     - assets/images/start_screen_img.jpg
     - assets/images/water_image.jpeg
-    - assets/untitled.riv
     - assets/animations.riv
 
   # An image asset can refer to one or more resolution-specific "variants", see

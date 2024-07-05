@@ -66,6 +66,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (response.statusCode == 200) {
       final body = json.decode(response.body);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('isHealthy', body['isHealthy']);
       return body['message'] == 'Token is valid';
     } else {
       return false;
