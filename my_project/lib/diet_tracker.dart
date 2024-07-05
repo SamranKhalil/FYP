@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:my_project/home_screen.dart';
 import 'package:pie_chart/pie_chart.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'add_meal_form.dart';
 
 class DietTracker extends StatefulWidget {
@@ -9,17 +11,17 @@ class DietTracker extends StatefulWidget {
   final Color backgroundColor;
 
   const DietTracker({
-    super.key,
+    Key? key,
     required this.themeColor,
     required this.backgroundColor,
-  });
+  }) : super(key: key);
 
   @override
   _DietTrackerState createState() => _DietTrackerState();
 }
 
 class _DietTrackerState extends State<DietTracker> {
-  final List<String> _meals = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
+  final List<String> _meals = ['apple', 'orange', 'mango', 'ginger'];
   final List<String> addedMeals = [];
   final Map<String, double> dataMap = {
     'Calories': 500,
@@ -46,11 +48,7 @@ class _DietTrackerState extends State<DietTracker> {
           themeColor: widget.themeColor,
           backgroundColor: widget.backgroundColor,
           meals: _meals,
-          onMealAdded: (mealType, meal, quantity) {
-            setState(() {
-              addedMeals.add('$mealType - $meal - $quantity g');
-            });
-          },
+          onMealAdded: _addMeal,
         );
       },
     );
@@ -74,7 +72,79 @@ class _DietTrackerState extends State<DietTracker> {
       setState(() {
         _startDate = picked[0];
         _endDate = picked[1];
+        _fetchData();
       });
+    }
+  }
+
+  Future<void> _fetchData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+
+    if (token != null && _startDate != null && _endDate != null) {
+      final String formattedStartDate =
+          DateFormat('yyyy-MM-dd').format(_startDate!);
+      final String formattedEndDate =
+          DateFormat('yyyy-MM-dd').format(_endDate!);
+
+      final response = await http.post(
+        Uri.parse('http://10.0.2.2:8000/user/intake/summary/'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'start_date': formattedStartDate,
+          'end_date': formattedEndDate,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final result = jsonDecode(response.body);
+        setState(() {
+          dataMap['Calories'] = result['nutrients']['total_calories'];
+          dataMap['Protein'] = result['nutrients']['protein_percentage'];
+          dataMap['Fats'] = result['nutrients']['fat_percentage'];
+          dataMap['Carbs'] = result['nutrients']['carbohydrates_percentage'];
+          // Update the meals list as needed
+          addedMeals.clear();
+          for (var food in result['foodList']) {
+            addedMeals.add(
+                '${food['mealType']} - ${food['meal']} - ${food['quantity']} g');
+          }
+        });
+        print("success");
+      } else {
+        print('Failed to load data');
+      }
+    }
+  }
+
+  Future<void> _addMeal(String mealType, String meal, String quantity) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+
+    if (token != null) {
+      final response = await http.post(
+        Uri.parse('http://10.0.2.2:8000/user/intake/add/'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'food_item': meal,
+          'quantity': quantity,
+          'is_drink': mealType == 'beverage',
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('Meal added successfully');
+        // Refresh data after adding meal
+        _fetchData();
+      } else {
+        print('Failed to add meal');
+      }
     }
   }
 
@@ -83,11 +153,9 @@ class _DietTrackerState extends State<DietTracker> {
     return Scaffold(
       backgroundColor: widget.backgroundColor,
       appBar: AppBar(
-        leading: Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.menu, color: Colors.white),
-            onPressed: () => Scaffold.of(context).openDrawer(),
-          ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
         ),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -118,66 +186,7 @@ class _DietTrackerState extends State<DietTracker> {
             ),
           ],
         ),
-        backgroundColor: widget.backgroundColor,
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: widget.themeColor,
-              ),
-              child: const Text(
-                'Menu',
-                style: TextStyle(
-                  fontFamily: 'RobotoSlab',
-                  color: Colors.white,
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Home'),
-              onTap: () {
-                Navigator.pop(context);
-                _navigateToScreen(
-                  context,
-                  HomeScreen(
-                    themeColor: widget.themeColor,
-                    backgroundColor: widget.backgroundColor,
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.food_bank_outlined),
-              title: const Text('Diet Tracker'),
-              onTap: () {
-                Navigator.pop(context);
-                // Navigate to Dashboard if needed
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('Profile'),
-              onTap: () {
-                Navigator.pop(context);
-                // Navigate to Profile if needed
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
-              onTap: () {
-                Navigator.pop(context);
-                // Navigate to Settings if needed
-              },
-            ),
-          ],
-        ),
+        backgroundColor: widget.themeColor,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -301,7 +310,7 @@ class _DietTrackerState extends State<DietTracker> {
                   ),
                 ),
               );
-            }),
+            }).toList(),
           ],
         ),
       ),
