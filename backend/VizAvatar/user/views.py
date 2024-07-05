@@ -84,9 +84,9 @@ class UserLogin(APIView):
             user = User.objects.get(email=email)
             if check_password(password, user.password):
                 if not user.is_active:
-                    return Response({'error': 'Email not confirmed. Please confirm your email before logging in.'}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({'error': 'Email not confirmed. Please confirm your email before logging in.', 'isActive': user.is_active}, status=status.HTTP_400_BAD_REQUEST)
                 token, created = Token.objects.get_or_create(user=user)
-                return Response({'message': 'Login successful!', 'token': token.key}, status=status.HTTP_200_OK)
+                return Response({'message': 'Login successful!', 'token': token.key, 'isActive': user.is_active}, status=status.HTTP_200_OK)
             logger.warning(f'Password mismatch for user: {user.email}')
             return Response({'error': 'Invalid email or password '}, status=status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist:
