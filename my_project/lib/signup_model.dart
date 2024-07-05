@@ -6,6 +6,10 @@ class SignupData {
   String? gender;
   int height;
   int weight;
+  int age;
+  bool prevalentStroke;
+  bool prevalentHypertension;
+  bool diabetes;
 
   SignupData({
     required this.email,
@@ -15,5 +19,9 @@ class SignupData {
     required this.gender,
     required this.height,
     required this.weight,
+    required this.age,
+    required this.prevalentStroke,
+    required this.prevalentHypertension,
+    required this.diabetes,
   });
 }

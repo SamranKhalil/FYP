@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:my_project/home_screen.dart';
 
 class LoginPage extends StatefulWidget {
@@ -8,10 +9,10 @@ class LoginPage extends StatefulWidget {
   final Color backgroundColor;
 
   const LoginPage({
-    super.key,
+    Key? key,
     required this.themeColor,
     required this.backgroundColor,
-  });
+  }) : super(key: key);
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -54,7 +55,15 @@ class _LoginPageState extends State<LoginPage> {
       print(response.statusCode);
       print(response.body);
       if (response.statusCode == 200) {
-        Navigator.push(
+        // Save token to SharedPreferences
+        final data = jsonDecode(response.body);
+        final accessToken = data['token'];
+
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('access_token', accessToken);
+
+        // Navigate to HomeScreen
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => HomeScreen(

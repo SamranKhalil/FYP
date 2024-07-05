@@ -7,12 +7,12 @@ class AddMealForm extends StatefulWidget {
   final Function(String, String, String) onMealAdded;
 
   const AddMealForm({
-    super.key,
+    Key? key,
     required this.themeColor,
     required this.backgroundColor,
     required this.meals,
     required this.onMealAdded,
-  });
+  }) : super(key: key);
 
   @override
   _AddMealFormState createState() => _AddMealFormState();
