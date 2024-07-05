@@ -275,4 +275,6 @@ class ValidateTokenView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        return Response({'message': 'Token is valid'}, status=status.HTTP_200_OK)
+        user = request.user
+        isHealthy = user.isHealthy
+        return Response({'message': 'Token is valid', 'isHealthy': isHealthy}, status=status.HTTP_200_OK)
