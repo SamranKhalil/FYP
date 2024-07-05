@@ -105,7 +105,7 @@ class AddNutritionalIntakeView(APIView):
         print("food_item", food_item)
         print("quantity", quantity)
         print("is_drink", is_drink)
-        
+
         if food_item is None or quantity is None or is_drink is None:
             return Response({'error': 'Food item and quantity and category are required'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -281,4 +281,5 @@ class ValidateTokenView(APIView):
     def get(self, request, *args, **kwargs):
         user = request.user
         isHealthy = user.isHealthy
-        return Response({'message': 'Token is valid', 'isHealthy': isHealthy}, status=status.HTTP_200_OK)
+        gender = (user.gender).lower()
+        return Response({'message': 'Token is valid', 'isHealthy': isHealthy, 'gender': gender}, status=status.HTTP_200_OK)
