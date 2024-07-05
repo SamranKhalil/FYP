@@ -101,6 +101,9 @@ class AddNutritionalIntakeView(APIView):
         quantity = request.data.get('quantity')
         is_drink = request.data.get('is_drink')
         user = request.user
+        print(food_item)
+        print(quantity)
+        print(is_drink)
 
         print("food_item", food_item)
         print("quantity", quantity)
