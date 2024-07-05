@@ -151,6 +151,7 @@ class _SignupPageDobState extends State<SignupPageDob> {
                                 prevalentStroke: false,
                                 prevalentHypertension: false,
                                 diabetes: false,
+                                currentSmoker: false,
                               ),
                             ),
                           ),

@@ -151,6 +151,7 @@ class _SignupPageState extends State<SignupPage> {
                               prevalentStroke: false,
                               prevalentHypertension: false,
                               diabetes: false,
+                              currentSmoker: false,
                             ),
                           ),
                         ),

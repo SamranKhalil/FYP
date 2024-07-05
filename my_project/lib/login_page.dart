@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:my_project/home_screen.dart';
+import 'package:my_project/email_confirmation_screen.dart';
 
 class LoginPage extends StatefulWidget {
   final Color themeColor;
@@ -57,22 +58,39 @@ class _LoginPageState extends State<LoginPage> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final accessToken = data['token'];
+        final isActive = data['isActive'];
 
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('access_token', accessToken);
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => HomeScreen(
-              themeColor: widget.themeColor,
-              backgroundColor: widget.backgroundColor,
+        if (isActive) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(
+                themeColor: widget.themeColor,
+                backgroundColor: widget.backgroundColor,
+              ),
             ),
-          ),
-        );
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Please verify your email')),
+          );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EmailConfirmationScreen(
+                themeColor: widget.themeColor,
+                backgroundColor: widget.backgroundColor,
+                email: email,
+              ),
+            ),
+          );
+        }
       } else {
         String errorMessage;
-        if (response.statusCode == 401) {
+        if (response.statusCode == 400) {
           errorMessage = 'Invalid credentials. Please try again.';
         } else {
           errorMessage = 'Login failed. Please try again later.';

@@ -3,18 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:my_project/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:my_project/signup_model.dart';
+// import 'package:my_project/signup_model.dart';
 
 class EmailConfirmationScreen extends StatefulWidget {
   final Color themeColor;
   final Color backgroundColor;
-  final SignupData signupData;
+  final String email;
 
   const EmailConfirmationScreen({
     Key? key,
     required this.themeColor,
     required this.backgroundColor,
-    required this.signupData,
+    required this.email,
   }) : super(key: key);
 
   @override
@@ -71,7 +71,7 @@ class _EmailConfirmationScreenState extends State<EmailConfirmationScreen> {
     try {
       final response = await http.post(
         Uri.parse(url),
-        body: jsonEncode({'email': widget.signupData.email}),
+        body: jsonEncode({'email': widget.email}),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -123,7 +123,7 @@ class _EmailConfirmationScreenState extends State<EmailConfirmationScreen> {
               ),
               const SizedBox(height: 20),
               Text(
-                'Enter the confirmation code we sent you to ${widget.signupData.email}.',
+                'Enter the confirmation code we sent you to ${widget.email}.',
                 style: const TextStyle(
                   fontFamily: 'RobotoSlab',
                   fontSize: 18,
