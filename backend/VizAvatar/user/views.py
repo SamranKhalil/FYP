@@ -102,7 +102,7 @@ class AddNutritionalIntakeView(APIView):
         is_drink = request.data.get('is_drink')
         user = request.user
 
-        if not food_item or not quantity or not is_drink:
+        if food_item is None or quantity is None or is_drink is None:
             return Response({'error': 'Food item and quantity and category are required'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
