@@ -8,5 +8,5 @@ urlpatterns = [
     path('intake/summary/', NutritionalSummaryView.as_view(), name='intake-summary'),
     path('confirm-email/', ConfirmEmail.as_view(), name='confirm_email'),
     path('resend-confirmation/', ResendConfirmationCode.as_view(), name='resend_confirmation'),
-    path('is-user-login', ValidateTokenView.as_view(), name='is-user-login'),
+    path('is-user-login/', ValidateTokenView.as_view(), name='is-user-login'),
 ]

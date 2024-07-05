@@ -105,6 +105,10 @@ class AddNutritionalIntakeView(APIView):
         print(quantity)
         print(is_drink)
 
+        print("food_item", food_item)
+        print("quantity", quantity)
+        print("is_drink", is_drink)
+        
         if food_item is None or quantity is None or is_drink is None:
             return Response({'error': 'Food item and quantity and category are required'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -136,7 +140,7 @@ class AddNutritionalIntakeView(APIView):
         serializer = NutritionalIntakeSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class NutritionalSummaryView(APIView):
