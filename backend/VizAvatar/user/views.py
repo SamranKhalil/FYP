@@ -13,6 +13,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
 from .helper import send_confirmation_email, generate_confirmation_code
 from django.shortcuts import get_object_or_404
+from datetime import date
 
 import logging
 
@@ -233,7 +234,26 @@ class DailyHealthRecordView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
+    def calculate_age(self, dob):
+        today = date.today()
+        return today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+
     def post(self, request, *args, **kwargs):
+        
+        user = request.user
+        
+        age = self.calculate_age(user.dob)
+        
+        # Prepare data for the serializer
+        data = request.data.copy()
+        data['user'] = user.id
+        data['age'] = age
+        data['sex'] = 1 if user.gender.lower() == 'male' else 0
+        data['prevalentStroke'] = user.prevalentStroke
+        data['prevalentHyp'] = user.prevalentHypertension
+        data['diabetes'] = user.diabetes
+        data['BPmeds'] = user.BPmeds
+
         serializer = DailyHealthRecordSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()

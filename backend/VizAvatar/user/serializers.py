@@ -4,7 +4,7 @@ from .models import User, NutritionalIntake, Food, Goal, UserDailyGoalStatus, Da
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'age', 'gender', 'height', 'weight', 'email', 'password', 'prevalentStroke', 'prevalentHypertension', 'diabetes', 'dob']
+        fields = ['username', 'age', 'gender', 'height', 'weight', 'email', 'password', 'prevalentStroke', 'prevalentHypertension', 'diabetes', 'dob', 'BPmeds']
         {
             'password': {'write_only': True},
             'username': {'required': True},
@@ -18,6 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
             'prevalentHypertension': {'required': False},
             'diabetes': {'required': False},
             'dob': {'required': False},
+            'BPmeds': {'required': False}
         }
 
     def create(self, validated_data):
@@ -33,6 +34,7 @@ class UserSerializer(serializers.ModelSerializer):
             prevalentHypertension=validated_data.get('prevalentHypertension', False),
             diabetes=validated_data.get('diabetes', False),
             dob=validated_data.get('dob', None),
+            BPmeds=validated_data.get('BPmeds', False),
         )
         user.set_password(validated_data['password'])
         user.save()
