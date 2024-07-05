@@ -13,10 +13,10 @@ class HomeScreen extends StatefulWidget {
   final Color backgroundColor;
 
   const HomeScreen({
-    Key? key,
+    super.key,
     required this.themeColor,
     required this.backgroundColor,
-  }) : super(key: key);
+  });
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -40,12 +40,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _loadRiveFile() async {
-    final data = await rootBundle.load('assets/untitled.riv');
+    final data = await rootBundle.load('assets/animations.riv');
     final file = RiveFile.import(data);
 
     setState(() {
       _artboard = file.mainArtboard;
-      _controller = SimpleAnimation('idle happy 2');
+      _controller = SimpleAnimation('MAN wave happy');
       _artboard!.addController(_controller);
     });
   }
