@@ -30,6 +30,7 @@ class _SignupPageGenderState extends State<SignupPageGender> {
   bool? _prevalentStroke;
   bool? _prevalentHypertension;
   bool? _diabetes;
+  bool _currentSmoker = false;
 
   @override
   void initState() {
@@ -107,6 +108,7 @@ class _SignupPageGenderState extends State<SignupPageGender> {
           'prevalentStroke': _prevalentStroke,
           'prevalentHypertension': _prevalentHypertension,
           'diabetes': _diabetes,
+          'currentSmoker': _currentSmoker,
         }),
       );
 
@@ -126,7 +128,7 @@ class _SignupPageGenderState extends State<SignupPageGender> {
             builder: (context) => EmailConfirmationScreen(
               themeColor: widget.themeColor,
               backgroundColor: widget.backgroundColor,
-              signupData: widget.signupData,
+              email: widget.signupData.email,
             ),
           ),
         );
@@ -285,7 +287,7 @@ class _SignupPageGenderState extends State<SignupPageGender> {
               ],
             ),
             const SizedBox(height: 30),
-            Text(
+            const Text(
               'Do you have prevalent hypertension?',
               style: TextStyle(
                 fontFamily: 'RobotoSlab',
@@ -338,7 +340,7 @@ class _SignupPageGenderState extends State<SignupPageGender> {
               ],
             ),
             const SizedBox(height: 30),
-            Text(
+            const Text(
               'Do you have diabetes?',
               style: TextStyle(
                 fontFamily: 'RobotoSlab',
@@ -375,6 +377,59 @@ class _SignupPageGenderState extends State<SignupPageGender> {
                     if (_isMounted) {
                       setState(() {
                         _diabetes = value == 'Yes';
+                      });
+                    }
+                  },
+                  activeColor: widget.themeColor,
+                ),
+                const Text(
+                  'No',
+                  style: TextStyle(
+                    fontFamily: 'RobotoSlab',
+                    fontSize: 18,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 30),
+            const Text(
+              'Are you a smoker?',
+              style: TextStyle(
+                fontFamily: 'RobotoSlab',
+                fontSize: 20,
+                color: Colors.white,
+              ),
+            ),
+            Row(
+              children: [
+                Radio<String>(
+                  value: 'Yes',
+                  groupValue: _currentSmoker == true ? 'Yes' : 'No',
+                  onChanged: (value) {
+                    if (_isMounted) {
+                      setState(() {
+                        _currentSmoker = value == 'Yes';
+                      });
+                    }
+                  },
+                  activeColor: widget.themeColor,
+                ),
+                const Text(
+                  'Yes',
+                  style: TextStyle(
+                    fontFamily: 'RobotoSlab',
+                    fontSize: 18,
+                    color: Colors.white,
+                  ),
+                ),
+                Radio<String>(
+                  value: 'No',
+                  groupValue: _currentSmoker == false ? 'No' : 'Yes',
+                  onChanged: (value) {
+                    if (_isMounted) {
+                      setState(() {
+                        _currentSmoker = value == 'Yes';
                       });
                     }
                   },

@@ -10,6 +10,7 @@ class SignupData {
   bool prevalentStroke;
   bool prevalentHypertension;
   bool diabetes;
+  bool currentSmoker;
 
   SignupData({
     required this.email,
@@ -23,5 +24,6 @@ class SignupData {
     required this.prevalentStroke,
     required this.prevalentHypertension,
     required this.diabetes,
+    required this.currentSmoker,
   });
 }
