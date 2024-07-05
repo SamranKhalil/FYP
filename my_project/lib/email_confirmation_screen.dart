@@ -103,7 +103,7 @@ class _EmailConfirmationScreenState extends State<EmailConfirmationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: widget.backgroundColor,
+      backgroundColor: Colors.white,
       body: Container(
         alignment: Alignment.topCenter,
         padding: const EdgeInsets.symmetric(horizontal: 20),
