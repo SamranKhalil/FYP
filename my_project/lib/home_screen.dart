@@ -6,16 +6,17 @@ import 'package:my_project/diet_tracker.dart';
 import 'package:my_project/water_tracker.dart';
 import 'package:my_project/weight_tracker.dart';
 import 'package:my_project/steps_tracker.dart';
+import 'package:my_project/health_form.dart';
 
 class HomeScreen extends StatefulWidget {
   final Color themeColor;
   final Color backgroundColor;
 
   const HomeScreen({
-    super.key,
+    Key? key,
     required this.themeColor,
     required this.backgroundColor,
-  });
+  }) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -139,12 +140,14 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('Profile'),
+              leading: const Icon(Icons.assignment_turned_in),
+              title: const Text('Submit Health Form'), // Changed to Submit Form
               onTap: () {
                 Navigator.pop(context); // Close the drawer
-                // Navigate to Profile screen
-                // _navigateToScreen(context, ProfileScreen(themeColor: widget.themeColor));
+                _navigateToScreen(
+                  context,
+                  SubmitHealthForm(), // Replace with your sample screen widget
+                );
               },
             ),
             ListTile(

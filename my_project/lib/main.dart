@@ -3,7 +3,7 @@ import 'package:my_project/start_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MaterialApp(
+  runApp(MaterialApp(
     home: StartScreen(),
   ));
 }
