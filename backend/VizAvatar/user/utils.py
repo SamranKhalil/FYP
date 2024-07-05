@@ -4,6 +4,7 @@ import os
 import re
 from .models import Food
 from .serializers import FoodSerializer
+from decimal import Decimal
 # ===================
 load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
@@ -21,11 +22,11 @@ def extract_nutrients(response):
     }
     
     nutrients = {
-        'calories': 0,
-        'protein': 0,
-        'fat': 0,
-        'carbohydrates': 0,
-        'minerals': 0
+        'calories': Decimal(0),
+        'protein': Decimal(0),
+        'fat': Decimal(0),
+        'carbohydrates': Decimal(0),
+        'minerals': Decimal(0)
     }
     
     for nutrient, pattern in nutrient_patterns.items():
@@ -33,9 +34,9 @@ def extract_nutrients(response):
         if match:
             value = match.group(1)
             if value == 'none':
-                nutrients[nutrient] = 0
+                nutrients[nutrient] = Decimal(0)
             else:
-                nutrients[nutrient] = float(value)
+                nutrients[nutrient] = Decimal(value)
     return nutrients
 
 
@@ -86,8 +87,9 @@ def get_nutrients_per_100grams_or_100ml(food_name, is_drink):
     
     response = model.generate_content(input_prompt)
     answer = response.text
+    print("answer_from_Gemini : ", answer)
     nutrients = extract_nutrients(answer)
-    
+    print("nutrients_after_my_regex : ",nutrients)
     return nutrients
     
 
@@ -112,11 +114,11 @@ def calculate_nutritional_values(food_item, quantity, is_drink_):
         # Use serializer to save the food data
         food_data = {
             'name': food_item,
-            'calories': nutrients_per_100g_or_100ml.get('calories', 0),
-            'protein': nutrients_per_100g_or_100ml.get('protein', 0),
-            'fat': nutrients_per_100g_or_100ml.get('fat', 0),
-            'carbohydrates': nutrients_per_100g_or_100ml.get('carbohydrates', 0),
-            'minerals': nutrients_per_100g_or_100ml.get('minerals', 0),
+            'calories': Decimal(nutrients_per_100g_or_100ml.get('calories', 0)),
+            'protein': Decimal(nutrients_per_100g_or_100ml.get('protein', 0)),
+            'fat': Decimal(nutrients_per_100g_or_100ml.get('fat', 0)),
+            'carbohydrates': Decimal(nutrients_per_100g_or_100ml.get('carbohydrates', 0)),
+            'minerals': Decimal(nutrients_per_100g_or_100ml.get('minerals', 0)),
             'is_drink': is_drink
         }
 
@@ -127,7 +129,8 @@ def calculate_nutritional_values(food_item, quantity, is_drink_):
             return food_serializer.errors
 
         nutrients = nutrients_per_100g_or_100ml
-
-    scaled_nutrients = {nutrient: (amount * quantity / 100) for nutrient, amount in nutrients.items()}    
+    
+    quantity_decimal = Decimal(quantity)
+    scaled_nutrients = {nutrient: (amount * quantity_decimal / Decimal(100)) for nutrient, amount in nutrients.items()}    
 
     return scaled_nutrients
