@@ -148,7 +148,7 @@ class _AddMealFormState extends State<AddMealForm> {
                   SnackBar(
                     content: Text(
                       'Meal added: $mealType, $meal, Quantity: $quantity',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: 'RobotoSlab',
                       ),
                     ),

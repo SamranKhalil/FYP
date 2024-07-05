@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_project/home_screen.dart';
 
 class SubmitHealthForm extends StatefulWidget {
   @override
@@ -141,6 +142,16 @@ class _SubmitHealthFormState extends State<SubmitHealthForm> {
       print('Has taken medicine: $_hasTakenMedicine');
       print('Cigarettes per day: $_cigarettesPerDay');
       print('Glucose level: $_glucoseLevel');
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const HomeScreen(
+            themeColor: Color.fromARGB(255, 187, 210, 248),
+            backgroundColor: Color.fromARGB(255, 30, 39, 97),
+          ),
+        ),
+      );
 
       // Reset the form after submission
       _formKey.currentState!.reset();
