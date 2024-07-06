@@ -12,6 +12,10 @@ django-cors-headers = "*"
 python-dotenv = "*"
 djangorestframework-simplejwt = "*"
 bcrypt = "*"
+joblib = "*"
+numpy = "*"
+pandas = "*"
+scikit-learn = "*"
 
 [dev-packages]
 

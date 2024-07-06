@@ -3,9 +3,9 @@ POST http://127.0.0.1:8000/user/signup/
 Content-Type: application/json
 
 {
-  "email": "mash@yopmail.com",
+  "email": "mashhood@yopmail.com",
   "password": "testpassword123",
-  "username": "mash",
+  "username": "mashhood",
   "age": 25,
   "gender": "male",
   "height": 175.5,
@@ -22,7 +22,7 @@ POST http://127.0.0.1:8000/user/login/
 Content-Type: application/json
 
 {
-    "email" : "mash@yopmail.com",
+    "email" : "mashhood@yopmail.com",
     "password": "testpassword123"
 }
 ### Confirm Email
@@ -30,16 +30,16 @@ POST http://127.0.0.1:8000/user/confirm-email/
 Content-Type: application/json
 
 {
-  "confirmation_code": "fFBfYC"
+  "confirmation_code": "8wJLF6"
 }
 
 
-# 38e1321a8201a17cd6aef90ac90da7c58d39f77a
+# 5726dbddd0a07c3d49d545cadb046cc281ed0fc2
 
 ### add nutrient intake
 POST http://127.0.0.1:8000/user/intake/add/
 Content-Type: application/json
-Authorization: Token 38e1321a8201a17cd6aef90ac90da7c58d39f77a
+Authorization: Token 5726dbddd0a07c3d49d545cadb046cc281ed0fc2
 
 {
   "food_item": "Mango",
@@ -61,3 +61,36 @@ Authorization: Token 38e1321a8201a17cd6aef90ac90da7c58d39f77a
   "start_date": "2024-07-05",
   "end_date": "2024-07-05"
 }
+
+
+
+### get daily-gaol-status
+GET http://127.0.0.1:8000/user/daily-goal-status/
+Authorization: Token 5726dbddd0a07c3d49d545cadb046cc281ed0fc2
+
+
+### Save Daily Health Record
+POST http://localhost:8000/user/daily-health-record/
+
+Content-Type: application/json
+Authorization: Token 5726dbddd0a07c3d49d545cadb046cc281ed0fc2
+
+{
+    "date": "2024-07-01",
+    "cigsPerDay": 20,
+    "BPmeds": 0,
+    "totChol": 200,
+    "sysBP": 120,
+    "diaBP": 80,
+    "BMI": 25.0,
+    "heartRate": 70,
+    "glucose": 90
+}
+
+# bad patient
+# id	age	education	sex	is_smoking	cigsPerDay	BPMeds	prevalentStroke	prevalentHyp	diabetes	totChol	sysBP	diaBP	BMI	heartRate	glucose	CADRiskFiveYear
+# 3	50	1	M	YES	20	0	0	1	0	233	158	88	28.26	68	94	1
+
+# good user
+# 1	36	4	M	NO	0	0	0	1	0	212	168	98	29.77	72	75	0
+

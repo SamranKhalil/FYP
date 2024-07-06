@@ -15,6 +15,16 @@ from .helper import send_confirmation_email, generate_confirmation_code
 from django.shortcuts import get_object_or_404
 from datetime import date
 from decimal import Decimal
+import pandas as pd
+
+
+import joblib
+import numpy as np
+from django.utils import timezone
+from datetime import timedelta
+from .models import DailyHealthRecord
+
+
 
 import logging
 
@@ -312,6 +322,90 @@ class ValidateTokenView(APIView):
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        isHealthy = user.isHealthy
+
+
+        # Load the saved logistic regression model
+        model_path = '/home/okami/Desktop/FYP/FYP/backend/model.pkl'
+        trained_model = joblib.load(model_path)
+        
+        feature_order_path = '/home/okami/Desktop/FYP/FYP/backend/feature_order.pkl'
+        feature_order = joblib.load(feature_order_path)
+
+        scaler_path = '/home/okami/Desktop/FYP/FYP/backend/scaler.pkl'
+        mms = joblib.load(scaler_path)
+
+        # Fetch the last 30 days of data from DailyHealthRecord
+        end_date = timezone.now().date()
+        start_date = end_date - timedelta(days=30)
+        records = DailyHealthRecord.objects.filter(user=user, date__range=[start_date, end_date])
+
+        if not records.exists():
+            isHealthy = user.isHealthy
+            gender = (user.gender).lower()
+            return Response({'message': 'Token is valid', 'isHealthy': isHealthy, 'gender': gender}, status=status.HTTP_200_OK)
+
+        # Aggregate the data by taking the average of each column
+        aggregated_data = records.aggregate(
+            avg_age=Sum('age') / len(records),
+            avg_sex=Sum('sex') / len(records),
+            avg_currentSmoker=Sum('currentSmoker') / len(records),
+            avg_cigsPerDay=Sum('cigsPerDay') / len(records),
+            avg_BPmeds=Sum('BPmeds') / len(records),
+            avg_prevalentStroke=Sum('prevalentStroke') / len(records),
+            avg_prevalentHyp=Sum('prevalentHyp') / len(records),
+            avg_diabetes=Sum('diabetes') / len(records),
+            avg_totChol=Sum('totChol') / len(records),
+            avg_sysBP=Sum('sysBP') / len(records),
+            avg_diaBP=Sum('diaBP') / len(records),
+            avg_BMI=Sum('BMI') / len(records),
+            avg_heartRate=Sum('heartRate') / len(records),
+            avg_glucose=Sum('glucose') / len(records)
+        )
+        
+        # Prepare data for prediction
+        input_data = {
+            'age': user.age,
+            'sex': 1 if user.gender.lower() == 'male' else 0,
+            'is_smoking': user.currentSmoker,
+            'prevalentStroke': user.prevalentStroke,
+            'prevalentHyp': user.prevalentHypertension,
+            'diabetes': user.diabetes,
+            'cigsPerDay': aggregated_data['avg_cigsPerDay'],
+            'BPMeds': aggregated_data['avg_BPmeds'],
+            'totChol': aggregated_data['avg_totChol'],
+            'sysBP': aggregated_data['avg_sysBP'],
+            'diaBP': aggregated_data['avg_diaBP'],
+            'BMI': aggregated_data['avg_BMI'],
+            'heartRate': aggregated_data['avg_heartRate'],
+            'glucose': aggregated_data['avg_glucose']
+        }
+
+        # Convert to DataFrame for pre-processing
+        user_data = pd.DataFrame([input_data])
+
+        # Add interaction feature
+        user_data['age_cigsPerDay'] = user_data['age'] * user_data['cigsPerDay']
+
+        # Ensure the correct order of features
+        user_data = user_data[feature_order]
+
+        # Log transformation
+        user_data = np.log(user_data + 1)
+
+        # Scaling
+        user_data_scaled = mms.transform(user_data)
+
+        # Make prediction
+        prediction = trained_model.predict(user_data_scaled)
+        prediction_proba = trained_model.predict_proba(user_data_scaled)
+
+        prediction = int(prediction)
+        
+        isHealthy = True
+        if(prediction == 0):
+            isHealthy = False
+        user.isHealthy = isHealthy
         gender = (user.gender).lower()
-        return Response({'message': 'Token is valid', 'isHealthy': isHealthy, 'gender': gender}, status=status.HTTP_200_OK)
+        return Response({{'message': 'Token is valid', 'isHealthy': isHealthy, 'gender': gender}}, status=status.HTTP_200_OK)
+        
+

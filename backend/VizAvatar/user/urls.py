@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UserSignup, UserLogin, AddNutritionalIntakeView, NutritionalSummaryView, ConfirmEmail, ResendConfirmationCode, ValidateTokenView, UpdateDailyGoalStatusView
+from .views import UserSignup, UserLogin, AddNutritionalIntakeView, NutritionalSummaryView, ConfirmEmail, ResendConfirmationCode, ValidateTokenView, UpdateDailyGoalStatusView, DailyHealthRecordView
 
 urlpatterns = [
     path('signup/', UserSignup.as_view(), name='user-signup'),
@@ -10,4 +10,5 @@ urlpatterns = [
     path('resend-confirmation/', ResendConfirmationCode.as_view(), name='resend_confirmation'),
     path('is-user-login/', ValidateTokenView.as_view(), name='is-user-login'),
     path('daily-goal-status/', UpdateDailyGoalStatusView.as_view(), name='daily-goal-status'),
+    path('add-daily-health-data', DailyHealthRecordView.as_view())
 ]
