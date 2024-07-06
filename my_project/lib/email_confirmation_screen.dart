@@ -42,6 +42,7 @@ class _EmailConfirmationScreenState extends State<EmailConfirmationScreen> {
 
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('access_token', accessToken);
+        await prefs.setString('gender', data['gender']);
 
         Navigator.push(
           context,

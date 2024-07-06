@@ -1,37 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 import 'package:flutter/services.dart';
-import 'package:sensors_plus/sensors_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:my_project/diet_tracker.dart';
-import 'package:my_project/water_tracker.dart';
-import 'package:my_project/weight_tracker.dart';
-import 'package:my_project/steps_tracker.dart';
 import 'package:my_project/health_form.dart';
+import 'package:my_project/start_screen.dart'; // Assuming StartScreen is imported from this file
 
 class HomeScreen extends StatefulWidget {
   final Color themeColor;
   final Color backgroundColor;
 
   const HomeScreen({
-    super.key,
+    Key? key,
     required this.themeColor,
     required this.backgroundColor,
-  });
+  }) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int sleepCompleted = 0;
+  int walkTimeCompleted = 0;
+  int eatFruitsCompleted = 0;
+  int walkStepsCompleted = 0;
+
   Artboard? _artboard;
   late RiveAnimationController _controller;
-  bool isWalking = false;
+  String selectedGender = 'male';
+  bool isHealthy = true;
 
   @override
   void initState() {
     super.initState();
+    _loadPreferences();
     _initializeRive();
-    _initializeAccelerometer();
+  }
+
+  void _loadGoalData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      sleepCompleted = prefs.getInt('sleepCompleted') ?? 0;
+      walkTimeCompleted = prefs.getInt('walkTimeCompleted') ?? 0;
+      eatFruitsCompleted = prefs.getInt('eatFruitsCompleted') ?? 0;
+      walkStepsCompleted = prefs.getInt('walkStepsCompleted') ?? 0;
+    });
+  }
+
+  Future<void> _loadPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      selectedGender = prefs.getString('gender') ?? 'male';
+      isHealthy = prefs.getBool('isHealthy') ?? true;
+    });
   }
 
   Future<void> _initializeRive() async {
@@ -45,36 +68,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() {
       _artboard = file.mainArtboard;
-      _controller = SimpleAnimation('MAN wave happy');
+      _controller = SimpleAnimation(isHealthy
+          ? '${selectedGender}_idle_happy'
+          : '${selectedGender}_critical');
       _artboard!.addController(_controller);
     });
-  }
-
-  void _initializeAccelerometer() {
-    accelerometerEvents.listen((AccelerometerEvent event) {
-      setState(() {
-        if (event.x.abs() > 1.0 || event.y.abs() > 1.0) {
-          if (!isWalking) {
-            _controller = SimpleAnimation('walking 2');
-            _artboard?.addController(_controller);
-            isWalking = true;
-          }
-        } else {
-          if (isWalking) {
-            _controller = SimpleAnimation('idle happy 2');
-            _artboard?.addController(_controller);
-            isWalking = false;
-          }
-        }
-      });
-    });
-  }
-
-  void _navigateToScreen(BuildContext context, Widget screen) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => screen),
-    );
   }
 
   @override
@@ -98,6 +96,12 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _loadGoalData,
+          ),
+        ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -122,14 +126,13 @@ class _HomeScreenState extends State<HomeScreen> {
               title: const Text('Home'),
               onTap: () {
                 Navigator.pop(context); // Close the drawer
-                // No need to navigate since we're already on Home
               },
             ),
             ListTile(
               leading: const Icon(Icons.food_bank_outlined),
               title: const Text('Diet Tracker'),
               onTap: () {
-                Navigator.pop(context); // Close the drawer
+                Navigator.pop(context);
                 _navigateToScreen(
                   context,
                   DietTracker(
@@ -141,23 +144,19 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.assignment_turned_in),
-              title: const Text('Submit Health Form'), // Changed to Submit Form
+              title: const Text('Submit Health Form'),
               onTap: () {
-                Navigator.pop(context); // Close the drawer
+                Navigator.pop(context);
                 _navigateToScreen(
                   context,
-                  SubmitHealthForm(), // Replace with your sample screen widget
+                  SubmitHealthForm(),
                 );
               },
             ),
             ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                // Navigate to Settings screen
-                // _navigateToScreen(context, SettingsScreen(themeColor: widget.themeColor));
-              },
+              leading: const Icon(Icons.logout), // Changed icon to logout
+              title: const Text('Logout'), // Changed title to Logout
+              onTap: _logoutAndNavigateToStartScreen, // Call logout method
             ),
           ],
         ),
@@ -167,11 +166,11 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
-              height: 500, // Adjusted height for the animation
-              width: 300, // Adjusted width for the animation
+              height: 500,
+              width: 300,
               child: _artboard != null
                   ? Transform.translate(
-                      offset: const Offset(0, -50), // Move the animation up
+                      offset: const Offset(0, -50),
                       child: Rive(
                         artboard: _artboard!,
                         fit: BoxFit.cover,
@@ -189,17 +188,19 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(
-              height: 10, // Add some spacing between the avatar and the metrics
+              height: 10,
             ),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildGoalButton('Water', '52%'),
-                  _buildGoalButton('Calories', '60%'),
-                  _buildGoalButton('Steps', '80%'),
-                  _buildGoalButton('Weight', '80%'),
+                  _buildGoalCard('Sleep', '$sleepCompleted / 7 hours'),
+                  _buildGoalCard('Walk Time', '$walkTimeCompleted / 25 mins'),
+                  _buildGoalCard(
+                      'Eat Fruits', '$eatFruitsCompleted / 500 grams'),
+                  _buildGoalCard(
+                      'Walk Steps', '$walkStepsCompleted / 10000 steps'),
                 ],
               ),
             ),
@@ -209,93 +210,64 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildGoalButton(String label, String percentage) {
-    return InkWell(
-      onTap: () {
-        if (label == 'Calories') {
-          _navigateToScreen(
-            context,
-            DietTracker(
-              themeColor: widget.themeColor,
-              backgroundColor: widget.backgroundColor,
-            ),
-          );
-        } else if (label == 'Water') {
-          _navigateToScreen(
-            context,
-            WaterTracker(
-              themeColor: widget.themeColor,
-              backgroundColor: widget.backgroundColor,
-            ),
-          );
-        } else if (label == 'Steps') {
-          _navigateToScreen(
-            context,
-            StepsTracker(
-              themeColor: widget.themeColor,
-              backgroundColor: widget.backgroundColor,
-            ),
-          );
-        } else if (label == 'Weight') {
-          _navigateToScreen(
-            context,
-            WeightTracker(
-              themeColor: widget.themeColor,
-              backgroundColor: widget.backgroundColor,
-            ),
-          );
-        }
-      },
-      child: Container(
-        width: 100, // Fixed width for all cards
-        margin: const EdgeInsets.symmetric(horizontal: 5),
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: widget.backgroundColor,
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 1,
-              blurRadius: 5,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Text(
-              label,
-              style: const TextStyle(
-                fontFamily: 'RobotoSlab',
-                fontSize: 18,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 5),
-            SizedBox(
-              width: 50,
-              height: 50,
-              child: CircularProgressIndicator(
-                value: double.parse(percentage.replaceAll('%', '')) / 100,
-                backgroundColor: Colors.white,
-                valueColor: AlwaysStoppedAnimation(widget.themeColor),
-              ),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              percentage,
-              style: const TextStyle(
-                fontFamily: 'RobotoSlab',
-                fontSize: 16,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
+  Widget _buildGoalCard(String title, String progress) {
+    return Container(
+      width: 135,
+      margin: const EdgeInsets.symmetric(horizontal: 2),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: widget.backgroundColor,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontFamily: 'RobotoSlab',
+              fontSize: 18,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            progress,
+            style: const TextStyle(
+              fontFamily: 'RobotoSlab',
+              fontSize: 16,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _navigateToScreen(BuildContext context, Widget screen) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => screen),
+    );
+  }
+
+  void _logoutAndNavigateToStartScreen() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear(); // Clear all stored preferences
+    Navigator.pushReplacement(
+      // Navigate to StartScreen and remove this page from stack
+      context,
+      MaterialPageRoute(builder: (context) => const StartScreen()),
     );
   }
 }

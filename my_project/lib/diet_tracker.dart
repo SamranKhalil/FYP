@@ -322,172 +322,229 @@ class _DietTrackerState extends State<DietTracker> {
     }
   }
 
+  Future<void> _sendDataOnBackPressed() async {
+    // Send GET request to backend
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('access_token');
+
+    if (token != null) {
+      final response = await http.get(
+        Uri.parse('http://10.0.2.2:8000/user/daily-goal-status/'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Token $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> result = jsonDecode(response.body);
+        await prefs.setInt('sleepCompleted', 0);
+        await prefs.setInt('walkTimeCompleted', 0);
+        await prefs.setInt('eatFruitsCompleted', 0);
+        await prefs.setInt('walkStepsCompleted', 0);
+
+        for (var item in result) {
+          int goal = item['goal'];
+          double amountAchieved = double.parse(item['amount_achieved']);
+          int amount = amountAchieved.toInt();
+          switch (goal) {
+            case 1:
+              await prefs.setInt('sleepCompleted', amount);
+              break;
+            case 2:
+              await prefs.setInt('walkTimeCompleted', amount);
+              break;
+            case 3:
+              await prefs.setInt('eatFruitsCompleted', amount);
+              break;
+            case 4:
+              await prefs.setInt('walkStepsCompleted', amount);
+              break;
+            default:
+          }
+        }
+        print('Data stored successfully');
+      } else {
+        print('Failed to fetch data on back press');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: widget.backgroundColor,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            const Text(
-              'Diet Tracker',
-              style: TextStyle(
-                fontFamily: 'RobotoSlab',
-                color: Colors.white,
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(width: 20),
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: widget.themeColor,
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                onPressed: () {
-                  _showAddMealForm(context);
-                },
-                icon: const Icon(Icons.add, color: Colors.white),
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: widget.themeColor,
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                InkWell(
-                  onTap: () => _selectDateRange(context),
-                  child: Text(
-                    _startDate != null && _endDate != null
-                        ? '${DateFormat('d-MMMM-yyyy').format(_startDate!)} to ${DateFormat('d-MMMM-yyyy').format(_endDate!)}'
-                        : 'Select Date Range',
-                    style: const TextStyle(
-                      fontFamily: 'RobotoSlab',
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const Icon(
-                  Icons.keyboard_arrow_down,
+    return WillPopScope(
+      onWillPop: () async {
+        await _sendDataOnBackPressed();
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: widget.backgroundColor,
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () async {
+              await _sendDataOnBackPressed();
+              Navigator.pop(context);
+            },
+          ),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const Text(
+                'Diet Tracker',
+                style: TextStyle(
+                  fontFamily: 'RobotoSlab',
                   color: Colors.white,
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
                 ),
-              ],
-            ),
-            const SizedBox(height: 30),
-            Container(
-              padding: const EdgeInsets.all(30.0),
-              margin: const EdgeInsets.all(10.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: widget.themeColor,
               ),
-              child: Column(
+              const SizedBox(width: 20),
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: widget.themeColor,
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  onPressed: () {
+                    _showAddMealForm(context);
+                  },
+                  icon: const Icon(Icons.add, color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: widget.themeColor,
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 20),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    'Your Daily Nutrition',
-                    style: TextStyle(
-                      fontFamily: 'RobotoSlab',
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  PieChart(
-                    dataMap: dataMap,
-                    chartType: ChartType.ring,
-                    ringStrokeWidth: 32,
-                    chartRadius: MediaQuery.of(context).size.width / 3,
-                    colorList: [
-                      Colors.blue,
-                      Colors.green,
-                      Colors.orange,
-                      Colors.red,
-                      Colors.purple,
-                    ],
-                    legendOptions: const LegendOptions(
-                      showLegends: true,
-                      legendPosition: LegendPosition.right,
-                      showLegendsInRow: false,
-                      legendTextStyle: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                  InkWell(
+                    onTap: () => _selectDateRange(context),
+                    child: Text(
+                      _startDate != null && _endDate != null
+                          ? '${DateFormat('d-MMMM-yyyy').format(_startDate!)} to ${DateFormat('d-MMMM-yyyy').format(_endDate!)}'
+                          : 'Select Date Range',
+                      style: const TextStyle(
+                        fontFamily: 'RobotoSlab',
                         color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    chartValuesOptions: const ChartValuesOptions(
-                      showChartValuesOutside: true,
-                      showChartValues: true,
-                      showChartValuesInPercentage: true,
-                      showChartValueBackground: true,
-                      decimalPlaces: 1,
-                    ),
+                  ),
+                  const Icon(
+                    Icons.keyboard_arrow_down,
+                    color: Colors.white,
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.all(20),
-              margin: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: widget.themeColor,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Your Meals',
-                    style: TextStyle(
-                      fontFamily: 'RobotoSlab',
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  ...addedMeals.map((meal) {
-                    return Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 15),
-                      margin: const EdgeInsets.only(bottom: 5),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: Colors.white.withOpacity(0.2),
+              const SizedBox(height: 30),
+              Container(
+                padding: const EdgeInsets.all(30.0),
+                margin: const EdgeInsets.all(10.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: widget.themeColor,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Your Daily Nutrition',
+                      style: TextStyle(
+                        fontFamily: 'RobotoSlab',
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
-                      child: Text(
-                        meal,
-                        style: const TextStyle(
-                          fontFamily: 'RobotoSlab',
+                    ),
+                    const SizedBox(height: 20),
+                    PieChart(
+                      dataMap: dataMap,
+                      chartType: ChartType.ring,
+                      ringStrokeWidth: 32,
+                      chartRadius: MediaQuery.of(context).size.width / 3,
+                      colorList: [
+                        Colors.blue,
+                        Colors.green,
+                        Colors.orange,
+                        Colors.red,
+                        Colors.purple,
+                      ],
+                      legendOptions: const LegendOptions(
+                        showLegends: true,
+                        legendPosition: LegendPosition.right,
+                        showLegendsInRow: false,
+                        legendTextStyle: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
                           color: Colors.white,
-                          fontSize: 16,
                         ),
                       ),
-                    );
-                  }).toList(),
-                ],
+                      chartValuesOptions: const ChartValuesOptions(
+                        showChartValuesOutside: true,
+                        showChartValues: true,
+                        showChartValuesInPercentage: true,
+                        showChartValueBackground: true,
+                        decimalPlaces: 1,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(20),
+                margin: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: widget.themeColor,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Your Meals',
+                      style: TextStyle(
+                        fontFamily: 'RobotoSlab',
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    ...addedMeals.map((meal) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 15),
+                        margin: const EdgeInsets.only(bottom: 5),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.white.withOpacity(0.2),
+                        ),
+                        child: Text(
+                          meal,
+                          style: const TextStyle(
+                            fontFamily: 'RobotoSlab',
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

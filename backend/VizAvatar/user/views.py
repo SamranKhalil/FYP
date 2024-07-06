@@ -217,7 +217,7 @@ class UpdateDailyGoalStatusView(APIView):
         user = request.user
         goal_id = request.data.get('goal_id')
         amount_achieved = request.data.get('amount_achieved')
-        date = request.data.get('date', timezone.now().date())  # Default to today if not provided
+        date = request.data.get('date', timezone.now().date())
 
         if not goal_id or not amount_achieved:
             return Response({'error': 'Goal ID and amount achieved are required'}, status=status.HTTP_400_BAD_REQUEST)
@@ -230,7 +230,7 @@ class UpdateDailyGoalStatusView(APIView):
         try:
             record = UserDailyGoalStatus.objects.get(user=user, goal=goal, date=date)
             record.amount_achieved += Decimal(amount_achieved)
-            record.save()
+            record.save() 
         except:
             amount_achieved = Decimal(amount_achieved)
             record = UserDailyGoalStatus.objects.create(user=user, goal=goal, date=date, amount_achieved=amount_achieved)
