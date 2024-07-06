@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import User, NutritionalIntake, Food, Goal, UserDailyGoalStatus, DailyHealthRecord
+from django.utils import timezone
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -40,6 +41,12 @@ class UserSerializer(serializers.ModelSerializer):
         )
         user.set_password(validated_data['password'])
         user.save()
+
+        # Create initial UserDailyGoalStatus entries
+        goals = Goal.objects.all()
+        for goal in goals:
+            UserDailyGoalStatus.objects.create(user=user, goal=goal, date=timezone.now().date(), amount_achieved=0)
+
         return user
 
 class NutritionalIntakeSerializer(serializers.ModelSerializer):

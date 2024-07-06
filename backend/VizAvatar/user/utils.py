@@ -39,6 +39,21 @@ def extract_nutrients(response):
                 nutrients[nutrient] = Decimal(value)
     return nutrients
 
+def is_Fruit_or_Vegetable(item_name):
+    input_prompt = f"""
+    Is {item_name} a fruit or a vegetable ?
+    give me your response in Yes if this {item_name} is a fruit or a vegetable and give me No if this {item_name} is something else
+    AND MAKE SURE to give me your response in either Yes or No, do not give me the other text
+    """
+    
+    response = model.generate_content(input_prompt)
+    answer = response.text
+    answer_in_lowercase = answer.lower()
+    
+    if "yes" in answer_in_lowercase:
+        return True
+    else:
+        return False
 
 def is_item_food(item_name):
     input_prompt = f"""
