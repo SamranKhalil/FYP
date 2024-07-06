@@ -6,7 +6,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from .models import User, NutritionalIntake, Goal, UserDailyGoalStatus, DailyHealthRecord,EmailConfirmation
 from .serializers import UserSerializer, NutritionalIntakeSerializer, DateRangeSerializer, UserDailyGoalStatusSerializer, DailyHealthRecordSerializer
 from django.utils import timezone
-from .utils import calculate_nutritional_values
+from .utils import calculate_nutritional_values, is_Fruit_or_Vegetable
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Sum
 from rest_framework.authtoken.models import Token
@@ -14,6 +14,7 @@ from rest_framework.authentication import TokenAuthentication
 from .helper import send_confirmation_email, generate_confirmation_code
 from django.shortcuts import get_object_or_404
 from datetime import date
+from decimal import Decimal
 
 import logging
 
@@ -50,8 +51,8 @@ class ConfirmEmail(APIView):
             user.save()
         
             token = Token.objects.create(user=user)
-            
-            return Response({'message': 'Email confirmed successfully', 'token': token.key}, status=status.HTTP_200_OK)
+            gender = (user.gender).lower()
+            return Response({'message': 'Email confirmed successfully', 'token': token.key, 'gender': gender}, status=status.HTTP_200_OK)
         
         except EmailConfirmation.DoesNotExist:
             return Response({'error': 'Invalid confirmation code'}, status=status.HTTP_400_BAD_REQUEST)
@@ -138,8 +139,22 @@ class AddNutritionalIntakeView(APIView):
         }
 
         serializer = NutritionalIntakeSerializer(data=data)
+
         if serializer.is_valid():
             serializer.save()
+
+            is_Fruit = is_Fruit_or_Vegetable(food_item)
+            if is_Fruit:
+                goal_id = 3
+                date = timezone.now().date()
+                try:
+                    goal_status = UserDailyGoalStatus.objects.get(user=user, goal_id=goal_id, date=date)
+                    goal_status.amount_achieved += Decimal(quantity)
+                    goal_status.save()
+                except UserDailyGoalStatus.DoesNotExist:
+                    quantity = Decimal(quantity)
+                    UserDailyGoalStatus.objects.create(user=user, goal_id=goal_id, date=date, amount_achieved=quantity)
+
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -195,6 +210,7 @@ class NutritionalSummaryView(APIView):
 
 
 class UpdateDailyGoalStatusView(APIView):
+    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
@@ -210,18 +226,31 @@ class UpdateDailyGoalStatusView(APIView):
             goal = Goal.objects.get(id=goal_id)
         except Goal.DoesNotExist:
             return Response({'error': 'Goal not found'}, status=status.HTTP_404_NOT_FOUND)
-
-        record, created = UserDailyGoalStatus.objects.update_or_create(
-            user=user,
-            goal=goal,
-            date=date,
-            defaults={'amount_achieved': amount_achieved}
-        )
+        
+        try:
+            record = UserDailyGoalStatus.objects.get(user=user, goal=goal, date=date)
+            record.amount_achieved += Decimal(amount_achieved)
+            record.save()
+        except:
+            amount_achieved = Decimal(amount_achieved)
+            record = UserDailyGoalStatus.objects.create(user=user, goal=goal, date=date, amount_achieved=amount_achieved)
 
         serializer = UserDailyGoalStatusSerializer(record)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        date = timezone.now().date()
+        
+        records = UserDailyGoalStatus.objects.filter(user=user, date=date)
+        if not records.exists():
+            return Response({'message': 'No data found for the current date'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UserDailyGoalStatusSerializer(records, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class DailyGoalSummaryView(APIView):
+    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
